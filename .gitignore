@@ -1,0 +1,19 @@
+# 二进制工具
+ffmpeg/
+ffmpeg.zip
+*.exe
+
+# 临时生成的帧文件
+frames/
+
+# 压缩包
+*.zip
+*.rar
+*.7z
+
+# 系统文件
+Thumbs.db
+.DS_Store
+
+# IDE（保留 .vscode/settings.json 供团队共享）
+.cursor/

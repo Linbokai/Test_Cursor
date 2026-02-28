@@ -1,0 +1,2354 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>买量脚本工作台</title>
+<script>try{document.documentElement.setAttribute('data-theme',JSON.parse(localStorage.getItem('sg_theme'))||'dark')}catch(e){document.documentElement.setAttribute('data-theme','dark')}</script>
+<style>
+:root,[data-theme="dark"]{--bg:#08080a;--s1:#0e0e12;--s2:#16161c;--s3:#1e1e26;--s4:#2a2a34;--bd:rgba(255,255,255,.06);--p:#0A84FF;--pl:#409CFF;--pd:rgba(10,132,255,.08);--pg:linear-gradient(135deg,#0A84FF,#5AC8FA);--g:#30D158;--gd:rgba(48,209,88,.08);--r:#FF453A;--rd:rgba(255,69,58,.08);--y:#FFD60A;--yd:rgba(255,214,10,.08);--t1:rgba(255,255,255,.92);--t2:rgba(255,255,255,.50);--t3:rgba(255,255,255,.25);--R:14px;--r:10px;--glow-p:0 0 20px rgba(10,132,255,.25),0 0 60px rgba(10,132,255,.08);--glow-s:0 2px 8px rgba(0,0,0,.3),0 0 0 1px rgba(255,255,255,.04);--glass-bg:rgba(14,14,18,.8);--glass-bd:rgba(255,255,255,.04);--input-bg:rgba(255,255,255,.04);--input-bd:rgba(255,255,255,.08);--card-bg:rgba(255,255,255,.02);--card-bd:rgba(255,255,255,.05);--modal-bg:rgba(22,22,28,.92);--modal-overlay:rgba(0,0,0,.6);--msg-ai-bg:rgba(255,255,255,.03);--msg-user-bg:var(--pg);--select-opt-bg:#16161c;--scroll-thumb:rgba(255,255,255,.08)}
+[data-theme="light"]{--bg:#f5f5f7;--s1:#ffffff;--s2:#f0f0f2;--s3:#e5e5ea;--s4:#d1d1d6;--bd:rgba(0,0,0,.08);--p:#007AFF;--pl:#0055D4;--pd:rgba(0,122,255,.08);--pg:linear-gradient(135deg,#007AFF,#5AC8FA);--g:#28CD41;--gd:rgba(40,205,65,.08);--r:#FF3B30;--rd:rgba(255,59,48,.08);--y:#FF9F0A;--yd:rgba(255,159,10,.08);--t1:rgba(0,0,0,.88);--t2:rgba(0,0,0,.50);--t3:rgba(0,0,0,.30);--R:14px;--r:10px;--glow-p:0 0 16px rgba(0,122,255,.15),0 0 40px rgba(0,122,255,.05);--glow-s:0 1px 4px rgba(0,0,0,.06),0 0 0 1px rgba(0,0,0,.04);--glass-bg:rgba(255,255,255,.85);--glass-bd:rgba(0,0,0,.06);--input-bg:rgba(0,0,0,.03);--input-bd:rgba(0,0,0,.1);--card-bg:rgba(0,0,0,.02);--card-bd:rgba(0,0,0,.06);--modal-bg:rgba(255,255,255,.95);--modal-overlay:rgba(0,0,0,.3);--msg-ai-bg:rgba(0,0,0,.03);--msg-user-bg:var(--pg);--select-opt-bg:#ffffff;--scroll-thumb:rgba(0,0,0,.1)}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','SF Pro Text','Helvetica Neue','PingFang SC',sans-serif;background:var(--bg);color:var(--t1);line-height:1.65;overflow:hidden;height:100vh;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;letter-spacing:-.01em;transition:background .35s ease,color .35s ease}
+::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--scroll-thumb);border-radius:3px}::-webkit-scrollbar-thumb:hover{background:var(--t3)}
+a{color:var(--pl);text-decoration:none;transition:color .15s}a:hover{color:#5ac8fa;text-decoration:none}
+button{font-family:inherit;transition:all .2s ease}
+
+/* Layout */
+.app{display:flex;flex-direction:column;height:100vh}
+.hdr{background:var(--glass-bg);backdrop-filter:saturate(180%) blur(24px);-webkit-backdrop-filter:saturate(180%) blur(24px);border-bottom:1px solid var(--glass-bd);padding:0 24px;height:48px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;z-index:10}
+.hdr-title{font-size:17px;font-weight:600;color:var(--t1);letter-spacing:-.02em}
+.hdr-r{display:flex;gap:8px;align-items:center}
+.theme-toggle{width:34px;height:34px;border-radius:50%;background:var(--input-bg);border:1px solid var(--input-bd);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px;transition:all .3s ease;flex-shrink:0;line-height:1}
+.theme-toggle:hover{background:var(--card-bd);transform:scale(1.1)}
+.theme-toggle:active{transform:scale(.95)}
+html{transition:background .3s ease,color .3s ease}
+.body{flex:1;display:flex;overflow:hidden}
+
+/* Buttons */
+.btn{display:inline-flex;align-items:center;gap:5px;padding:7px 14px;border-radius:980px;font-size:12px;font-weight:500;cursor:pointer;border:none;transition:all .2s ease;color:var(--t1);letter-spacing:-.01em}
+.btn:active{transform:scale(.97)}
+.btn-p{background:var(--pg);color:#fff;box-shadow:var(--glow-p)}.btn-p:hover{transform:translateY(-1px);box-shadow:0 0 24px rgba(10,132,255,.35),0 0 80px rgba(10,132,255,.12)}
+.btn-g{background:var(--card-bg);border:1px solid var(--input-bd)}.btn-g:hover{background:var(--input-bg);border-color:var(--bd);transform:translateY(-1px)}
+.btn-s{padding:5px 12px;font-size:11px}
+
+/* Left Panel: Theme Radar */
+.left{width:320px;background:var(--s1);border-right:1px solid var(--glass-bd);display:flex;flex-direction:column;flex-shrink:0;transition:background .35s ease,border-color .35s ease}
+.left-hd{padding:14px 20px;border-bottom:1px solid var(--glass-bd);display:flex;align-items:center;justify-content:space-between}
+.left-hd-title{font-size:13px;font-weight:600;color:var(--t2);letter-spacing:-.01em}
+.dim-btns{display:flex;flex-wrap:wrap;gap:5px}
+.dim-btn{font-size:10px;padding:4px 10px;border-radius:980px;border:1px solid var(--card-bd);background:var(--card-bg);color:var(--t2);cursor:pointer;transition:all .2s ease;white-space:nowrap;font-family:inherit;line-height:1.3}
+.dim-btn:hover{border-color:var(--p);color:var(--p);background:var(--pd);transform:translateY(-1px)}
+.dim-btn.loading{opacity:.5;pointer-events:none}
+.dim-btn.done{border-color:var(--g);color:var(--g)}
+.left-scroll{flex:1;overflow-y:auto;padding:16px}
+
+.preset-sec{margin-bottom:4px}
+.preset-hd{font-size:12px;font-weight:600;color:var(--t1);padding:6px 0;cursor:pointer;user-select:none;display:flex;align-items:center;justify-content:space-between}
+.preset-grid{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:4px}
+.preset-chip{font-size:11px;padding:6px 12px;border-radius:980px;border:1px solid var(--card-bd);background:var(--card-bg);cursor:pointer;transition:all .2s ease;white-space:nowrap;line-height:1.3;color:var(--t2)}
+.preset-chip:hover{background:var(--input-bg);color:var(--t1);transform:translateY(-1px)}
+.preset-chip.active{border-color:var(--p);background:var(--pd);color:var(--p);font-weight:500}
+.preset-sep{height:1px;background:var(--glass-bd);margin:12px 0}
+
+.theme-card{background:var(--card-bg);border:1px solid var(--card-bd);border-radius:var(--R);padding:14px;margin-bottom:8px;cursor:pointer;transition:all .25s ease;position:relative;box-shadow:var(--glow-s)}
+.theme-card:hover{background:var(--input-bg);border-color:var(--input-bd);transform:translateY(-1px)}
+.theme-card.checked{border-color:var(--p);background:var(--pd);box-shadow:var(--glow-p)}
+.theme-card.checked::after{content:'✓';position:absolute;top:10px;right:12px;color:var(--p);font-weight:600;font-size:14px}
+.tc-name{font-size:14px;font-weight:600;margin-bottom:4px;letter-spacing:-.02em}
+.tc-desc{font-size:12px;color:var(--t2);line-height:1.5;margin-bottom:6px}
+.tc-tags{display:flex;gap:4px;flex-wrap:wrap}
+.tc-tag{font-size:10px;padding:2px 8px;border-radius:980px;font-weight:500}
+.tc-tag.hot{background:var(--rd);color:var(--r)}
+.tc-tag.emo{background:var(--yd);color:var(--y)}
+.tc-tag.vis{background:var(--pd);color:var(--pl)}
+.tc-tag.meme{background:var(--gd);color:var(--g)}
+.tc-detail-toggle{font-size:10px;color:var(--t3);margin-top:6px;cursor:pointer;user-select:none}
+.tc-detail-toggle:hover{color:var(--p)}
+.tc-detail{display:none;margin-top:6px;padding-top:6px;border-top:1px solid var(--bd)}
+.tc-detail-sec{margin-bottom:6px}
+.tc-detail-sec b{font-size:10px;color:var(--t2);display:block;margin-bottom:2px}
+.tc-detail-item{font-size:10px;color:var(--t3);line-height:1.5;padding:2px 0 2px 8px;border-left:2px solid var(--input-bd)}
+
+.add-theme{border:1px dashed var(--input-bd);border-radius:var(--R);padding:12px;text-align:center;color:var(--t3);font-size:12px;cursor:pointer;transition:all .25s ease;margin-top:4px}
+.add-theme:hover{border-color:var(--p);color:var(--p);background:var(--pd)}
+
+/* Sell-tag bar */
+.sell-bar{padding:6px 20px;border-bottom:1px solid var(--glass-bd);background:var(--s1);overflow:hidden}
+.sell-bar-hd{display:flex;align-items:center;gap:8px;cursor:pointer;user-select:none}
+.sell-bar-hd label{font-size:11px;color:var(--t3);font-weight:600;cursor:pointer}
+.sell-bar-hd .sell-arrow{font-size:9px;color:var(--t3);transition:transform .2s}
+.sell-bar-hd.open .sell-arrow{transform:rotate(90deg)}
+.sell-body{display:none;padding-top:8px}
+.sell-body.open{display:block}
+.sell-group{margin-bottom:6px;display:flex;align-items:flex-start;gap:6px}
+.sell-group-label{font-size:10px;color:var(--t3);font-weight:600;min-width:44px;padding-top:3px;flex-shrink:0;text-align:right}
+.sell-group-chips{display:flex;flex-wrap:wrap;gap:4px}
+.sell-chip{font-size:10px;padding:3px 10px;border-radius:980px;border:1px solid var(--card-bd);background:var(--card-bg);cursor:pointer;transition:all .2s ease;white-space:nowrap;color:var(--t2);font-family:inherit}
+.sell-chip:hover{background:var(--input-bg);color:var(--t1);transform:translateY(-1px)}
+.sell-chip.active{border-color:var(--p);background:var(--pd);color:var(--p);font-weight:500}
+.sell-summary{font-size:10px;color:var(--t2);margin-left:8px}
+
+.theme-input-wrap{background:var(--card-bg);border:1px solid var(--card-bd);border-radius:var(--R);padding:12px;margin-top:8px;display:none}
+.theme-input-wrap.open{display:block}
+.theme-input-wrap input{width:100%;background:var(--input-bg);border:1px solid var(--input-bd);border-radius:var(--r);padding:8px 12px;color:var(--t1);font-size:12px;outline:none;margin-bottom:6px;transition:all .2s ease}
+.theme-input-wrap input:focus{border-color:var(--p);box-shadow:0 0 0 3px rgba(10,132,255,.1)}
+
+/* Right Panel: Workspace */
+.right{flex:1;display:flex;flex-direction:column;min-width:0}
+
+/* Top Bar */
+.topbar{padding:10px 24px;border-bottom:1px solid var(--glass-bd);background:var(--glass-bg);backdrop-filter:saturate(180%) blur(24px);-webkit-backdrop-filter:saturate(180%) blur(24px);display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.topbar label{font-size:11px;color:var(--t3);font-weight:500;letter-spacing:.01em}
+.topbar select,.topbar input{background:var(--input-bg);border:1px solid var(--input-bd);border-radius:var(--r);padding:6px 10px;color:var(--t1);font-size:12px;outline:none;font-family:inherit;transition:all .2s ease}
+.topbar select:focus,.topbar input:focus{border-color:var(--p);box-shadow:0 0 0 3px rgba(10,132,255,.12)}
+.topbar select{cursor:pointer}
+.topbar select option{background:var(--select-opt-bg);color:var(--t1)}
+.game-sel{min-width:140px}
+.dur-sel{width:70px}
+.topbar-sep{width:1px;height:20px;background:var(--bd)}
+
+/* Chat Area */
+.chat{flex:1;display:flex;flex-direction:column;overflow:hidden}
+.msgs{flex:1;overflow-y:auto;padding:20px 24px;display:flex;flex-direction:column;gap:14px}
+.msg{max-width:82%;animation:fi .3s ease}
+@keyframes fi{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.msg-ai{align-self:flex-start}
+.msg-user{align-self:flex-end}
+.msg-b{padding:12px 16px;border-radius:18px;font-size:13px;line-height:1.75;white-space:pre-wrap;word-wrap:break-word}
+.msg-ai .msg-b{background:var(--msg-ai-bg);border:1px solid var(--card-bd);box-shadow:var(--glow-s)}
+.msg-user .msg-b{background:var(--msg-user-bg);color:#fff;box-shadow:var(--glow-p)}
+.msg-lbl{font-size:10px;color:var(--t3);margin-bottom:3px;padding:0 4px;font-weight:500}
+.msg-acts{display:flex;gap:6px;margin-top:6px;flex-wrap:wrap}
+.msg-acts .btn{font-size:10px;padding:4px 10px;color:var(--t2);border-radius:980px;transition:all .2s ease}.msg-acts .btn:hover{color:var(--pl);background:var(--pd);transform:translateY(-1px)}
+
+/* ===== Storyboard Panel (Apple-style) ===== */
+.typing{display:flex;gap:4px;padding:6px 14px}
+.typing span{width:5px;height:5px;border-radius:50%;background:var(--t3);animation:bo .6s infinite alternate}
+.typing span:nth-child(2){animation-delay:.15s}
+.typing span:nth-child(3){animation-delay:.3s}
+@keyframes bo{to{transform:translateY(-5px);opacity:.4}}
+
+/* Input Area */
+.input-area{padding:14px 24px;border-top:1px solid var(--glass-bd);background:var(--glass-bg);backdrop-filter:saturate(180%) blur(24px);-webkit-backdrop-filter:saturate(180%) blur(24px)}
+.status-line{font-size:11px;margin-bottom:8px;display:flex;align-items:center;gap:4px;flex-wrap:wrap}
+.sdot{width:6px;height:6px;border-radius:50%;flex-shrink:0;transition:background .3s}
+.sgroup{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:980px;background:var(--card-bg);border:1px solid var(--card-bd);cursor:pointer;transition:all .25s ease;user-select:none}
+.sgroup:hover{background:var(--input-bg);border-color:var(--input-bd);transform:translateY(-1px)}
+.sgroup .slbl{color:var(--t3);font-weight:500}
+.sgroup .sval{color:var(--t1);font-weight:600}
+.sgroup.s-ok .sdot{background:var(--g)}
+.sgroup.s-err .sdot{background:var(--r)}
+.sgroup.s-checking .sdot{background:var(--y);animation:pulse-dot .8s infinite alternate}
+.sgroup.s-checking .sval::after{content:'…';animation:dots 1s steps(3,end) infinite}
+@keyframes pulse-dot{0%{opacity:1}100%{opacity:.3}}
+@keyframes dots{0%{content:''}33%{content:'.'}66%{content:'..'}100%{content:'…'}}
+.quick{display:flex;gap:6px;margin-bottom:8px;flex-wrap:wrap}
+.qb{font-size:11px;padding:6px 14px;border-radius:980px;background:var(--card-bg);border:1px solid var(--card-bd);color:var(--t2);cursor:pointer;transition:all .2s ease;white-space:nowrap;font-weight:500}
+.qb:hover{border-color:var(--input-bd);color:var(--t1);background:var(--input-bg);transform:translateY(-1px)}
+.iw{display:flex;gap:10px;align-items:flex-end}
+.iw textarea{flex:1;background:var(--input-bg);border:1px solid var(--input-bd);border-radius:20px;padding:10px 16px;color:var(--t1);font-size:13px;font-family:inherit;outline:none;resize:none;min-height:42px;max-height:140px;line-height:1.5;transition:all .2s ease}
+.iw textarea:focus{border-color:var(--p);box-shadow:0 0 0 3px rgba(10,132,255,.1)}
+.iw textarea::placeholder{color:var(--t3)}
+.sbtn{width:42px;height:42px;border-radius:50%;background:var(--pg);border:none;color:#fff;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .2s ease;box-shadow:0 0 16px rgba(10,132,255,.2)}
+.sbtn:hover{transform:scale(1.06);box-shadow:0 0 24px rgba(10,132,255,.35)}
+.sbtn:disabled{opacity:.3;cursor:not-allowed;transform:none;box-shadow:none}
+
+/* Video Upload */
+.vid-drop{position:relative;border:2px dashed var(--input-bd);border-radius:14px;padding:20px;text-align:center;cursor:pointer;transition:all .25s ease;background:var(--card-bg);margin:8px 0}
+.vid-drop:hover,.vid-drop.dragover{border-color:var(--p);background:var(--pd)}
+.vid-drop-icon{font-size:28px;margin-bottom:6px}
+.vid-drop-text{font-size:12px;color:var(--t2);line-height:1.5}
+.vid-drop-text b{color:var(--pl)}
+.vid-preview{display:flex;gap:12px;align-items:center;background:var(--card-bg);border:1px solid var(--card-bd);border-radius:12px;padding:12px;margin:8px 0;box-shadow:var(--glow-s)}
+.vid-preview video{width:180px;border-radius:8px;flex-shrink:0}
+.vid-preview-info{flex:1;min-width:0}
+.vid-preview-name{font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:4px}
+.vid-preview-meta{font-size:11px;color:var(--t3)}
+.vid-analyze-bar{display:flex;gap:8px;align-items:center}
+.vid-progress{flex:1;height:3px;background:var(--bd);border-radius:2px;overflow:hidden}
+.vid-progress-fill{height:100%;background:var(--p);border-radius:2px;transition:width .3s;width:0}
+
+/* Modal */
+.modal-bg{position:fixed;inset:0;background:var(--modal-overlay);z-index:200;display:none;align-items:center;justify-content:center;backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px)}
+.modal-bg.open{display:flex;animation:modal-bg-in .2s ease}
+@keyframes modal-bg-in{from{opacity:0}to{opacity:1}}
+#advApiPanel{display:none}#advApiPanel.open{display:block}
+.modal{background:var(--modal-bg);border:1px solid var(--input-bd);border-radius:20px;width:480px;max-width:92vw;max-height:80vh;overflow-y:auto;padding:28px;backdrop-filter:blur(40px);box-shadow:0 24px 80px rgba(0,0,0,.3),0 0 0 1px var(--glass-bd);animation:modal-in .25s ease}
+@keyframes modal-in{from{opacity:0;transform:scale(.96) translateY(8px)}to{opacity:1;transform:none}}
+.modal h3{font-size:17px;margin-bottom:16px;font-weight:600;letter-spacing:-.02em}
+.fg{margin-bottom:12px}
+.fg label{display:block;font-size:11px;color:var(--t2);margin-bottom:4px;font-weight:500}
+.fg input,.fg textarea,.fg select{width:100%;background:var(--input-bg);border:1px solid var(--input-bd);border-radius:var(--r);padding:9px 12px;color:var(--t1);font-size:12px;font-family:inherit;outline:none;transition:all .2s ease}
+.fg select option{background:var(--select-opt-bg);color:var(--t1);padding:6px}
+.fg input:focus,.fg textarea:focus,.fg select:focus{border-color:var(--p);box-shadow:0 0 0 3px rgba(10,132,255,.1)}
+.fg textarea{resize:vertical;min-height:50px}
+.modal-ft{display:flex;justify-content:flex-end;gap:8px;margin-top:16px}
+
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(50px);background:var(--s1);color:var(--t1);border:1px solid var(--input-bd);padding:8px 20px;border-radius:980px;font-size:12px;font-weight:600;opacity:0;transition:all .3s;z-index:300;pointer-events:none;box-shadow:0 4px 20px rgba(0,0,0,.2)}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+</style>
+</head>
+<body>
+
+<div class="app">
+  <!-- Header -->
+  <div class="hdr">
+    <span class="hdr-title">买量脚本工作台</span>
+    <div class="hdr-r">
+      <button class="btn btn-g btn-s" onclick="openGameMgr()">&#127918; 游戏库</button>
+      <button class="btn btn-g btn-s" onclick="openCfg()">&#9881; API设置</button>
+      <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" title="切换白天/夜晚模式">&#127769;</button>
+    </div>
+  </div>
+
+  <div class="body">
+    <!-- Left: Theme Radar -->
+    <div class="left">
+      <div class="left-hd" style="flex-direction:column;align-items:stretch;gap:10px;padding:14px 16px">
+        <div style="display:flex;align-items:center;justify-content:space-between">
+          <span class="left-hd-title">&#128225; 主题雷达</span>
+          <div style="display:flex;align-items:center;gap:6px">
+            <select id="searchPlatform" style="background:var(--s3);border:1px solid var(--bd);border-radius:6px;padding:3px 6px;color:var(--t1);font-size:10px;font-family:inherit;outline:none">
+              <option value="抖音">抖音</option>
+              <option value="快手">快手</option>
+              <option value="B站">B站</option>
+              <option value="全平台">全平台</option>
+            </select>
+            <button class="btn btn-p btn-s" id="scanAllBtn" onclick="scanAllDimensions()" style="white-space:nowrap;font-size:10px;padding:3px 8px">全部搜索</button>
+          </div>
+        </div>
+        <div class="dim-btns">
+          <button class="dim-btn" data-dim="topic" onclick="scanByDimension('topic')">&#128293; 热门话题</button>
+          <button class="dim-btn" data-dim="viral" onclick="scanByDimension('viral')">&#127916; 爆款视频</button>
+          <button class="dim-btn" data-dim="character" onclick="scanByDimension('character')">&#11088; 热门角色</button>
+          <button class="dim-btn" data-dim="competitor" onclick="scanByDimension('competitor')">&#128200; 竞品动态</button>
+          <button class="dim-btn" data-dim="hook" onclick="scanByDimension('hook')">&#127907; 钩子套路</button>
+        </div>
+      </div>
+      <div class="left-scroll" id="themeList">
+        <div class="preset-sec">
+          <div class="preset-hd" onclick="togglePreset()">&#128293; 热门引流主题 <span id="presetArrow" style="font-size:10px">&#9660;</span></div>
+          <div id="presetGrid" class="preset-grid"></div>
+        </div>
+        <div class="preset-sep"></div>
+        <div id="customThemeArea"></div>
+      </div>
+      <div style="padding:0 12px 12px">
+        <div class="add-theme" onclick="toggleAddTheme()">+ 手动添加主题</div>
+        <div class="theme-input-wrap" id="addThemeWrap">
+          <input id="addThemeName" placeholder="主题名称，如：僵尸末日">
+          <input id="addThemeDesc" placeholder="一句话描述（可选）">
+          <select id="addThemeType" style="width:100%;background:var(--s3);border:1px solid var(--bd);border-radius:var(--r);padding:6px 8px;color:var(--t1);font-size:11px;margin-bottom:6px">
+            <option value="vis">题材美学</option>
+            <option value="emo">情绪共鸣</option>
+            <option value="meme">网络热梗</option>
+            <option value="hot">影视热点</option>
+            <option value="vis">爽感公式</option>
+            <option value="emo">反差猎奇</option>
+          </select>
+          <button class="btn btn-p btn-s" onclick="addManualTheme()" style="width:100%">添加</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right: Workspace -->
+    <div class="right">
+      <!-- Top Config Bar -->
+      <div class="topbar" style="flex-wrap:wrap;gap:8px 12px">
+        <label>游戏</label>
+        <select class="game-sel" id="gameSel" onchange="onGameChange()"></select>
+        <div class="topbar-sep"></div>
+        <label>时长</label>
+        <select class="dur-sel" id="durSel">
+          <option>5秒</option><option>10秒</option><option selected>15秒</option><option>30秒</option><option>60秒</option>
+        </select>
+        <label>比例</label>
+        <select id="ratioSel">
+          <option selected>9:16</option><option>16:9</option><option>1:1</option>
+        </select>
+        <div class="topbar-sep"></div>
+        <label>脚本类型</label>
+        <select id="scriptTypeSel">
+          <option value="vo_guide">口播攻略</option>
+          <option value="vo_intro">口播介绍</option>
+          <option value="vo_benefit">口播福利</option>
+          <option value="showcase">展示类</option>
+          <option value="cg_story">CG剧情</option>
+          <option value="hook5s">5秒片头钩子</option>
+          <option value="skit">剧情类</option>
+        </select>
+        <div class="topbar-sep"></div>
+        <label>用户画像</label>
+        <select id="audienceSel">
+          <option value="">不限</option>
+          <option value="male-18-24">男18-24 学生/游戏宅</option>
+          <option value="male-25-35">男25-35 打工人/社畜</option>
+          <option value="male-35+">男35+ 中年解压</option>
+          <option value="female-18-24">女18-24 二次元/追星</option>
+          <option value="female-25-35">女25-35 宝妈/职场女性</option>
+          <option value="general">泛人群 下沉市场</option>
+          <option value="custom">自定义</option>
+        </select>
+        <input id="audienceCustom" placeholder="自定义画像..." style="width:120px;display:none">
+        <div class="topbar-sep"></div>
+        <label>主角人设</label>
+        <select id="heroSel">
+          <option value="">使用游戏角色</option>
+          <option value="auto-meme">🔥 自动匹配热梗人物</option>
+          <option value="custom">自定义</option>
+        </select>
+        <input id="heroCustom" placeholder="如：东北雨姐风格..." style="width:140px;display:none">
+        <button class="btn btn-g btn-s" onclick="scanHeroes()" title="搜索当前有流量的人物/形象">&#128270; 搜热门人物</button>
+        <div class="topbar-sep"></div>
+        <label>联动IP</label>
+        <select id="collabSel" onchange="var v=this.value;document.getElementById('collabCustom').style.display=v?'inline-block':'none';document.getElementById('collabSearchBtn').style.display=v?'inline-block':'none';if(!v){_collabInfo=null}">
+          <option value="">无联动</option>
+          <option value="custom">有联动</option>
+        </select>
+        <input id="collabCustom" placeholder="填写联动IP名称，如：葫芦兄弟、奥特曼..." style="width:180px;display:none">
+        <button class="btn btn-g btn-s" id="collabSearchBtn" onclick="searchCollabIP()" title="联网搜索该IP的角色信息、经典元素和热梗" style="display:none">&#128270; 搜索IP信息</button>
+      </div>
+      <div id="heroChips" style="padding:4px 20px;border-bottom:1px solid var(--bd);background:var(--s1);display:none;flex-wrap:wrap;gap:5px"></div>
+      <!-- Sell-tag bar -->
+      <div class="sell-bar">
+        <div class="sell-bar-hd" id="sellBarHd" onclick="toggleSellBar()">
+          <span class="sell-arrow">▸</span>
+          <label>卖点标签</label>
+          <span class="sell-summary" id="sellSummary">点击展开选择</span>
+        </div>
+        <div class="sell-body" id="sellBody"></div>
+      </div>
+      <div style="padding:4px 20px;border-bottom:1px solid var(--bd);background:var(--s1);display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+        <label style="font-size:11px;color:var(--t3);font-weight:600">已选主题</label>
+        <span id="selThemeDisplay" style="font-size:12px;color:var(--pl)">未选择</span>
+      </div>
+
+      <!-- Chat -->
+      <div class="chat">
+        <div style="display:flex;justify-content:flex-end;padding:4px 12px 0;gap:6px;flex-shrink:0">
+          <button class="btn btn-g btn-s" onclick="toggleHistPanel()" style="font-size:10px">&#128218; 历史记录 <span id="histCount" style="background:var(--s3);padding:0 5px;border-radius:8px;margin-left:2px">0</span></button>
+        </div>
+        <div id="histPanel" style="display:none;max-height:220px;overflow-y:auto;margin:0 12px 4px;border:1px solid var(--bd);border-radius:8px;background:var(--s1);flex-shrink:0">
+          <div id="histList" style="padding:6px"></div>
+        </div>
+        <div class="msgs" id="msgs">
+          <div class="msg msg-ai"><div class="msg-lbl">AI</div><div class="msg-b">欢迎使用买量脚本工作台。
+
+核心逻辑：数据驱动 + 钩子优先 — 前3秒决定一切。
+
+使用流程：
+1. 左侧选平台 → 按维度搜索（热门话题/爆款视频/热门角色/竞品动态/钩子套路）
+2. 点击卡片勾选主题，展开查看具体案例
+3. 顶栏选择游戏、时长、脚本类型
+4. 展开「卖点标签」勾选本次重点展示的游戏卖点
+5. 点「生成分镜脚本」→ 自动匹配最强钩子 + 按节奏蓝图生成
+6. 满意后：转Seedance提示词 / 导出分镜
+
+内置14种钩子套路 + 5档节奏模板 + 7种卖点类别 + 7种脚本类型 + 5维搜索。</div></div>
+        </div>
+        <div class="input-area">
+          <div class="status-line" id="statusLine"></div>
+          <div class="quick">
+            <button class="qb" style="background:var(--p);color:#fff;border-color:transparent;font-weight:600" onclick="genScript()">&#9889; 生成分镜脚本</button>
+            <button class="qb" style="background:var(--y);color:#1a1a2e;border-color:transparent;font-weight:600" onclick="triggerVideoUpload()">&#127909; 分析买量视频</button>
+            <button class="qb" onclick="qk('用完全不同的钩子类型和创意方向重新生成，不要跟上一个雷同',true)">&#128260; 换个方向</button>
+            <button class="qb" onclick="qk('分析当前主题适合哪些钩子套路，给出3个具体方案（标注预期效果强度）',true)">&#128161; 钩子推荐</button>
+            <button class="qb" onclick="qk('推荐3个适合当前主题和用户画像的热梗主角形象，给出视觉特征描述',true)">&#129497; 推荐主角</button>
+          </div>
+          <input type="file" id="videoFileInput" accept="video/*" style="display:none" onchange="handleVideoFile(this)">
+          <div class="iw">
+            <textarea id="chatInput" rows="1" placeholder="输入需求，或补充说明嫁接方式..." onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();send()}"></textarea>
+            <button class="sbtn" id="sendBtn" onclick="send()">&#10148;</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Game Manager Modal -->
+<div class="modal-bg" id="gameMgr">
+  <div class="modal">
+    <h3>&#127918; 游戏库管理</h3>
+    <div id="gameListUI"></div>
+    <div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--bd)">
+      <div class="fg"><label>游戏名称</label><input id="gm_name"></div>
+      <div class="fg"><label>游戏类型</label><input id="gm_genre" placeholder="如：塔防割草、三消、模拟经营"></div>
+      <div class="fg"><label>核心卖点</label><textarea id="gm_sell" rows="2" placeholder="游戏最吸引人的点"></textarea></div>
+    </div>
+    <div class="modal-ft">
+      <button class="btn btn-g" onclick="closeGameMgr()">关闭</button>
+      <button class="btn btn-p" onclick="saveGame()">&#10133; 添加/更新</button>
+    </div>
+  </div>
+</div>
+
+<!-- API Config Modal -->
+<div class="modal-bg" id="cfgModal">
+  <div class="modal">
+    <h3>API 设置</h3>
+
+    <!-- ===== OpenRouter ===== -->
+    <div style="margin-bottom:20px">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px">
+        <div style="font-size:14px;font-weight:600;color:var(--t1)">OpenRouter</div>
+        <span style="font-size:10px;padding:2px 10px;border-radius:980px;background:var(--pd);color:var(--p);font-weight:500">统一入口</span>
+      </div>
+      <p style="font-size:12px;color:var(--t2);margin-bottom:14px;line-height:1.7">
+        一个 Key 调用数百个模型。<a href="https://openrouter.ai/settings/keys" target="_blank">获取 Key →</a>
+      </p>
+      <div class="fg"><label>API Key</label><input type="password" id="c_or_key" placeholder="sk-or-..."></div>
+      <div class="fg">
+        <label>搜索模型</label>
+        <select id="c_or_search_model">
+          <option value="perplexity/sonar">Perplexity Sonar（联网搜索）</option>
+          <option value="perplexity/sonar-pro">Perplexity Sonar Pro（联网·深度）</option>
+          <option value="deepseek/deepseek-r1">DeepSeek R1（联网搜索·国内可用）</option>
+          <option value="qwen/qwen3-235b-a22b">Qwen3 235B（国内可用）</option>
+          <option value="google/gemini-3.1-pro-preview">Google Gemini 3.1 Pro</option>
+        </select>
+      </div>
+      <div class="fg">
+        <label>生成模型</label>
+        <select id="c_or_gen_model">
+          <option value="deepseek/deepseek-v3.2">DeepSeek V3.2（国内可用·推荐）</option>
+          <option value="deepseek/deepseek-r1">DeepSeek R1（深度推理）</option>
+          <option value="qwen/qwen3-235b-a22b">Qwen3 235B（国内可用）</option>
+          <option value="google/gemini-3.1-pro-preview">Google Gemini 3.1 Pro</option>
+          <option value="anthropic/claude-sonnet-4.6">Claude Sonnet 4.6</option>
+        </select>
+      </div>
+      <p style="font-size:11px;color:var(--t3);line-height:1.6;margin-top:4px">分镜图请到 <a href="https://www.lovart.ai" target="_blank">Lovart.ai</a> 制作</p>
+    </div>
+
+    <div style="height:1px;background:var(--bd);margin:0 0 16px"></div>
+
+    <!-- ===== 阿里云千问（视频分析） ===== -->
+    <div style="margin-bottom:20px">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px">
+        <div style="font-size:14px;font-weight:600;color:var(--t1)">阿里云千问</div>
+        <span style="font-size:10px;padding:2px 10px;border-radius:980px;background:rgba(255,149,0,.15);color:#ff9500;font-weight:500">视频分析</span>
+        <span style="font-size:10px;padding:2px 10px;border-radius:980px;background:var(--pd);color:var(--p);font-weight:500">推荐</span>
+      </div>
+      <p style="font-size:12px;color:var(--t2);margin-bottom:14px;line-height:1.7">
+        使用阿里云百炼 DashScope API 直接分析视频，支持 Qwen3-VL 系列模型。<a href="https://help.aliyun.com/zh/model-studio/get-api-key" target="_blank">获取 Key →</a>
+      </p>
+      <div class="fg"><label>DashScope API Key</label><input type="password" id="c_qwen_key" placeholder="sk-..."></div>
+      <div class="fg">
+        <label>视频分析模型</label>
+        <select id="c_qwen_video_model">
+          <option value="qwen3.5-plus">Qwen 3.5 Plus（最强，推荐）</option>
+          <option value="qwen3.5-flash">Qwen 3.5 Flash（快速低价）</option>
+          <option value="qwen3-vl-plus">Qwen3 VL Plus</option>
+          <option value="qwen-vl-max">Qwen VL Max</option>
+          <option value="qwen-vl-plus">Qwen VL Plus</option>
+        </select>
+      </div>
+    </div>
+
+    <div style="height:1px;background:var(--bd);margin:0 0 16px"></div>
+
+    <!-- ===== 高级 ===== -->
+    <button onclick="document.getElementById('advApiPanel').classList.toggle('open');this.querySelector('span').textContent=document.getElementById('advApiPanel').classList.contains('open')?'▲':'▼'" style="background:transparent;border:none;padding:0;font-size:12px;color:var(--t3);cursor:pointer;display:flex;align-items:center;gap:6px;font-family:inherit;margin-bottom:8px">
+      高级：单独配置各 API <span style="font-size:10px">▼</span>
+    </button>
+    <div id="advApiPanel" style="display:none">
+      <p style="font-size:11px;color:var(--t3);margin-bottom:12px">备用配置，仅在未配置 OpenRouter Key 时生效。</p>
+
+      <div class="fg"><label>搜索 — 服务商</label>
+        <select id="c_search_prov">
+          <option value="">使用 OpenRouter</option>
+          <option value="perplexity">Perplexity</option>
+          <option value="deepseek">DeepSeek</option>
+          <option value="openai">OpenAI</option>
+          <option value="custom">自定义</option>
+        </select>
+      </div>
+      <div id="searchApiF" style="display:none">
+        <div class="fg"><label>API Key</label><input type="password" id="c_search_key" placeholder="pplx-..."></div>
+        <div class="fg" id="c_search_ep_w" style="display:none"><label>Endpoint</label><input id="c_search_ep"></div>
+        <div class="fg"><label>模型</label><input id="c_search_model" value="sonar"></div>
+      </div>
+
+      <div class="fg" style="margin-top:12px"><label>生成 — 服务商</label>
+        <select id="c_gen_prov">
+          <option value="">使用 OpenRouter</option>
+          <option value="deepseek">DeepSeek</option>
+          <option value="openai">OpenAI</option>
+          <option value="custom">自定义</option>
+        </select>
+      </div>
+      <div id="genApiF" style="display:none">
+        <div class="fg"><label>API Key</label><input type="password" id="c_gen_key" placeholder="sk-..."></div>
+        <div class="fg" id="c_gen_ep_w" style="display:none"><label>Endpoint</label><input id="c_gen_ep"></div>
+        <div class="fg"><label>模型</label><input id="c_gen_model" value="deepseek-chat"></div>
+      </div>
+    </div>
+    <div class="modal-ft">
+      <button class="btn btn-g" onclick="closeCfg()">取消</button>
+      <button class="btn btn-p" onclick="saveCfg()">保存</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const $=s=>document.querySelector(s);
+const LS=localStorage;
+const load=k=>{try{return JSON.parse(LS.getItem(k))}catch{return null}};
+const save=(k,v)=>LS.setItem(k,JSON.stringify(v));
+const esc=t=>(t||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+
+/* ========== STATE ========== */
+let games=load('sg_games')||[];
+let selGame=load('sg_sel')||0;
+let themes=[];
+let chatHist=[];
+
+/* ========== PRESET THEMES ========== */
+const PRESETS=[
+  {id:'zombie',icon:'🧟',name:'丧尸末日',desc:'Q版丧尸围城、末日废墟、求生对抗，暗色调+紧张节奏',tier:1},
+  {id:'tower',icon:'🏰',name:'塔防策略',desc:'排兵布阵、建造防线、怪物潮水来袭、连锁防御满屏特效',tier:1},
+  {id:'rescue',icon:'🆘',name:'拯救营救',desc:'拔钉子/选路线救人救宠物，错误选择导致灾难，简单决策+强反差',tier:1},
+  {id:'countdown',icon:'⏱️',name:'倒计时挑战',desc:'数字倒计时求生/坚持N天，紧迫感+好胜心，"你能撑过33天吗？"',tier:1},
+  {id:'bullet',icon:'🔫',name:'弹幕割草',desc:'满屏子弹覆盖、怪物成片化为金币、伤害数字飘满天的无脑爽感',tier:2},
+  {id:'boss',icon:'👹',name:'巨型Boss战',desc:'Boss全屏压迫感、闪避大招、团队围攻、最终击杀大爆炸',tier:2},
+  {id:'dungeon',icon:'🗝️',name:'地牢探险',desc:'迷宫地图、开宝箱、遇陷阱、打怪掉装备升级的Roguelike感觉',tier:2},
+  {id:'survive',icon:'🏕️',name:'生存逃脱',desc:'搜集资源、建造庇护所、躲避追击、极限逃生',tier:2},
+  {id:'ceo',icon:'💰',name:'逆袭成长',desc:'从摆摊到CEO、数字指数增长、穷→富视觉对比，打工人代入感',tier:2},
+  {id:'asmr',icon:'🫧',name:'解压满足',desc:'切割/粉碎/液体流动/完美填充/连锁消除，碎片时间减压',tier:3},
+  {id:'drama',icon:'🎭',name:'狗血反转',desc:'出轨发现/复仇逆袭/身份反转/选择困境，肥皂剧情绪钩子',tier:3},
+  {id:'nostalgia',icon:'👾',name:'怀旧经典',desc:'像素风复古、经典角色重现、"爷青回"群体记忆共鸣',tier:3},
+  {id:'merge',icon:'🧩',name:'合成进化',desc:'低级→高级不断合成、满格→清空→更高级的循环满足感',tier:3},
+  {id:'pvp',icon:'⚔️',name:'PVP对决',desc:'1v1实时对抗、碾压对手、排行榜冲顶的竞技快感',tier:3}
+];
+/* ========== HOOK PATTERNS (经验证的前3秒钩子套路库) ========== */
+const HOOK_PATTERNS=[
+  {id:'suspense',name:'悬念反问',desc:'抛出一个让人忍不住想知道答案的问题或悬念',
+   scenes:['zombie','boss','dungeon','survive','pvp'],
+   example:'画面：角色被999只怪物包围，屏幕浮现文字"你觉得他能活几秒？"镜头快速推进角色惊恐的脸'},
+  {id:'number_shock',name:'数字冲击',desc:'用巨大的数字变化制造视觉冲击——伤害飙升、金币爆炸、等级狂涨',
+   scenes:['bullet','ceo','merge','tower','countdown'],
+   example:'画面中央巨大数字从1狂飙到999999，数字周围金光四射粒子爆炸，背景怪物成片倒下'},
+  {id:'instant_fail',name:'故意失败',desc:'角色第1秒就死亡/失败，制造"不可能"感，然后反转',
+   scenes:['zombie','dungeon','survive','countdown','rescue'],
+   example:'角色出场0.5秒被一拳打飞，屏幕碎裂+失败音效，然后画面倒转——"等一下，再来"'},
+  {id:'visual_overload',name:'视觉暴击',desc:'第一帧就满屏爆炸/怪物/宝箱/金币，用密度制造冲击',
+   scenes:['bullet','tower','boss','merge','asmr'],
+   example:'镜头从黑场瞬间切到满屏金色宝箱同时打开，光柱冲天，金币雨铺满画面'},
+  {id:'reversal_preview',name:'反转预告',desc:'先展示高潮/结局的1秒画面，再倒回开头讲故事',
+   scenes:['drama','ceo','survive','pvp','boss'],
+   example:'0秒：角色站在满地BOSS残骸上，光芒万丈——闪回黑场——"3分钟前…"切到角色还是Lv.1菜鸟'},
+  {id:'contrast',name:'对比冲突',desc:'画面分屏或快切，用强烈反差制造认知冲突',
+   scenes:['ceo','rescue','drama','pvp','merge'],
+   example:'左半屏：Lv.1角色被一只史莱姆追着跑；右半屏：Lv.99同一角色单手碾压BOSS群'},
+  {id:'forbidden',name:'禁忌好奇',desc:'暗示"不该做"的事，利用人类本能的好奇心',
+   scenes:['dungeon','drama','rescue','survive','countdown'],
+   example:'画面中央一个发光的红色按钮，上面写"别按"，一只手缓缓伸向按钮，手指颤抖即将触碰'},
+  {id:'countdown_bomb',name:'倒计时紧迫',desc:'倒数计时制造紧迫感，迫使观众留下来看结果',
+   scenes:['countdown','survive','boss','tower','pvp'],
+   example:'屏幕正中巨大红色数字3-2-1在跳动，每跳一下画面震动一次，背景炸弹滴答声，0的瞬间全屏爆炸'},
+  {id:'asmr_crack',name:'解压碾碎',desc:'用极致的解压/碾碎/切割画面触发感官满足',
+   scenes:['asmr','merge','bullet','tower'],
+   example:'俯拍视角：彩色方块整齐排列，巨大碾压器缓慢碾过，方块依次碎裂喷出彩色粒子，声音清脆连续'},
+  {id:'meme_hijack',name:'热梗劫持',desc:'用当下最火的梗/表情/动作开场，瞬间拉近距离',
+   scenes:['drama','nostalgia','ceo','rescue'],
+   example:'经典"挖呀挖"旋律响起，但画面是游戏角色在挖地牢宝箱，突然挖出一个BOSS'},
+  {id:'pov_fall',name:'POV坠入',desc:'第一人称视角坠落/穿越/被追，制造生理性紧张',
+   scenes:['dungeon','survive','zombie','boss'],
+   example:'POV视角从高处坠入深渊，四周岩壁高速后退，底部隐约看到发光的宝藏和巨大怪物的红眼'},
+  {id:'one_take',name:'一镜穿越',desc:'镜头不间断穿越多个场景，每穿一层视觉冲击升级',
+   scenes:['dungeon','tower','bullet','merge','boss'],
+   example:'镜头从森林入口一路向前穿过树林→进入洞窟→穿过岩浆河→到达Boss巢穴，每穿一层怪物密度翻倍'},
+  {id:'scale_reveal',name:'尺度揭示',desc:'先展示小场景，突然拉远揭示惊人的全貌规模',
+   scenes:['boss','tower','zombie','survive','bullet'],
+   example:'特写：角色自信微笑举起武器。镜头突然极速拉远——角色只有蚂蚁大小，面前是铺满整个山谷的万级怪物群'},
+  {id:'wrong_game',name:'货不对板',desc:'开头看起来像A游戏/类型，突然画风一转变成完全不同的内容',
+   scenes:['drama','nostalgia','rescue','ceo','merge'],
+   example:'画面像素风复古RPG正在走路，突然像素碎裂——露出3D高清画质的真实游戏画面，角色从像素变成精致3D'}
+];
+
+/* ========== RHYTHM TEMPLATES (按时长的节奏密度蓝图) ========== */
+const RHYTHM_TEMPLATES={
+  '5秒':{
+    total:5, segments:[
+      {range:'0-2s',role:'钩子',density:'极高',cuts:'1-2次快切',emotion:'震惊/好奇',note:'必须第1帧就有视觉冲击，0废帧'},
+      {range:'2-4s',role:'爆点',density:'极高',cuts:'1次',emotion:'爽/满足',note:'核心爽点一次释放'},
+      {range:'4-5s',role:'CTA',density:'中',cuts:'定格',emotion:'行动欲',note:'logo或"立即下载"定格'}
+    ]
+  },
+  '10秒':{
+    total:10, segments:[
+      {range:'0-2s',role:'钩子',density:'极高',cuts:'1-2次',emotion:'震惊/好奇',note:'1帧入戏，无任何铺垫'},
+      {range:'2-5s',role:'升级',density:'高',cuts:'2-3次',emotion:'期待升级',note:'钩子引发的局面快速升级'},
+      {range:'5-8s',role:'高潮',density:'极高',cuts:'2-3次快切',emotion:'爽到顶峰',note:'全片最爽一刻，视觉信息量最大'},
+      {range:'8-10s',role:'CTA',density:'中',cuts:'1次+定格',emotion:'行动欲',note:'高潮余韵+行动召唤'}
+    ]
+  },
+  '15秒':{
+    total:15, segments:[
+      {range:'0-3s',role:'钩子',density:'极高',cuts:'1-2次',emotion:'震惊/好奇',note:'黄金3秒，决定用户去留'},
+      {range:'3-6s',role:'铺垫',density:'高',cuts:'2次',emotion:'好奇加深',note:'建立世界观/冲突，但节奏不能掉'},
+      {range:'6-10s',role:'升级',density:'高',cuts:'3-4次',emotion:'紧张/期待',note:'冲突不断升级，每2秒一个新视觉刺激'},
+      {range:'10-13s',role:'高潮',density:'极高',cuts:'2-3次快切',emotion:'爽感爆发',note:'所有矛盾一次性引爆'},
+      {range:'13-15s',role:'CTA',density:'中',cuts:'定格',emotion:'行动欲',note:'英雄定格+行动召唤'}
+    ]
+  },
+  '30秒':{
+    total:30, segments:[
+      {range:'0-3s',role:'钩子',density:'极高',cuts:'1-2次',emotion:'震惊/好奇',note:'同样黄金3秒法则'},
+      {range:'3-8s',role:'建立',density:'高',cuts:'3-4次',emotion:'代入/好奇',note:'建立角色和世界观，让用户产生代入感'},
+      {range:'8-14s',role:'A线展示',density:'高',cuts:'4-5次',emotion:'紧张/兴奋',note:'引流主题画面高密度展示'},
+      {range:'14-20s',role:'B线穿插',density:'中高',cuts:'3-4次',emotion:'新鲜/期待',note:'切换到真实玩法，制造内容丰富感'},
+      {range:'20-26s',role:'高潮',density:'极高',cuts:'4-5次快切',emotion:'爽感爆炸',note:'A/B线汇聚，最强视觉冲击'},
+      {range:'26-30s',role:'CTA',density:'中',cuts:'1次+定格',emotion:'行动欲',note:'成就感画面+行动召唤'}
+    ]
+  },
+  '60秒':{
+    total:60, segments:[
+      {range:'0-3s',role:'钩子',density:'极高',cuts:'1-2次',emotion:'震惊/好奇',note:'依然黄金3秒'},
+      {range:'3-10s',role:'剧情建立',density:'高',cuts:'4-5次',emotion:'代入/共鸣',note:'角色困境建立，用户产生情感连接'},
+      {range:'10-20s',role:'A线展开',density:'中高',cuts:'5-6次',emotion:'紧张/兴奋',note:'引流主题深度展开，每5秒一个小高潮'},
+      {range:'20-30s',role:'B线展开',density:'中高',cuts:'5-6次',emotion:'新鲜/惊喜',note:'真实玩法展示，与A线形成对照'},
+      {range:'30-40s',role:'A/B交替',density:'高',cuts:'6-8次快切',emotion:'节奏加速',note:'两条线快速交替剪辑，节奏逐步提升'},
+      {range:'40-48s',role:'第一高潮',density:'极高',cuts:'4-5次',emotion:'第一波爽感',note:'A线主题达到视觉顶峰'},
+      {range:'48-53s',role:'终极高潮',density:'极高',cuts:'3-4次',emotion:'极致满足',note:'全片最强一击'},
+      {range:'53-60s',role:'CTA',density:'中',cuts:'2次+定格',emotion:'行动欲/成就感',note:'角色英雄定格+核心卖点+下载引导'}
+    ]
+  }
+};
+
+let presetOpen=true;
+
+function renderPresets(){
+  const grid=$('#presetGrid');
+  if(!grid)return;
+  const checked=getCheckedThemes().map(t=>t.name);
+  grid.innerHTML=PRESETS.map(p=>{
+    const active=checked.includes(p.name)||themes.some(t=>t.name===p.name&&t.checked);
+    return `<span class="preset-chip${active?' active':''}" onclick="togglePreset_('${p.id}')" title="${esc(p.desc)}">${p.icon} ${p.name}</span>`;
+  }).join('');
+}
+
+function togglePreset(){
+  presetOpen=!presetOpen;
+  $('#presetGrid').style.display=presetOpen?'flex':'none';
+  $('#presetArrow').textContent=presetOpen?'▼':'▶';
+}
+
+function togglePreset_(id){
+  const p=PRESETS.find(x=>x.id===id);if(!p)return;
+  const idx=themes.findIndex(t=>t.name===p.name);
+  if(idx>=0){
+    themes[idx].checked=!themes[idx].checked;
+  }else{
+    themes.push({name:p.name,desc:p.desc,tags:[{label:p.icon,type:'vis'},{label:p.tier===1?'🔥 T1':p.tier===2?'T2':'T3',type:p.tier===1?'hot':'vis'}],checked:true});
+  }
+  renderThemes();renderPresets();
+}
+
+/* ========== GAMES ========== */
+function openGameMgr(){$('#gameMgr').classList.add('open');renderGameList();clearGameForm()}
+function closeGameMgr(){$('#gameMgr').classList.remove('open')}
+
+function renderGameList(){
+  const el=$('#gameListUI');
+  if(!games.length){el.innerHTML='<div style="color:var(--t3);font-size:12px;padding:8px 0">暂无游戏，请在下方添加</div>';return}
+  el.innerHTML=games.map((g,i)=>`<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 10px;background:var(--s2);border-radius:var(--r);margin-bottom:6px;border:1px solid ${i===selGame?'var(--p)':'var(--bd)'}">
+    <div><b style="font-size:13px">${esc(g.name)}</b><span style="font-size:11px;color:var(--t3);margin-left:8px">${esc(g.genre)}</span></div>
+    <div style="display:flex;gap:4px">
+      <button class="btn btn-g btn-s" onclick="editGame(${i})">编辑</button>
+      <button class="btn btn-g btn-s" onclick="delGame(${i})" style="color:var(--r)">删除</button>
+    </div>
+  </div>`).join('');
+}
+
+function saveGame(){
+  const name=$('#gm_name').value.trim();
+  if(!name){toast('请填写游戏名称');return}
+  const data={name,genre:$('#gm_genre').value.trim(),sell:$('#gm_sell').value.trim()};
+  const existIdx=games.findIndex(g=>g.name===name);
+  if(existIdx>=0) games[existIdx]=data;
+  else games.push(data);
+  save('sg_games',games);
+  renderGameList();renderGameSel();clearGameForm();toast('已保存');
+}
+
+function editGame(i){
+  const g=games[i];
+  $('#gm_name').value=g.name;
+  $('#gm_genre').value=g.genre||'';
+  $('#gm_sell').value=g.sell||'';
+}
+
+function delGame(i){
+  if(!confirm(`删除「${games[i].name}」？`))return;
+  games.splice(i,1);
+  if(selGame>=games.length)selGame=Math.max(0,games.length-1);
+  save('sg_games',games);save('sg_sel',selGame);
+  renderGameList();renderGameSel();
+}
+
+function clearGameForm(){$('#gm_name').value='';$('#gm_genre').value='';$('#gm_sell').value=''}
+
+function renderGameSel(){
+  const el=$('#gameSel');
+  el.innerHTML=games.length?games.map((g,i)=>`<option value="${i}" ${i===selGame?'selected':''}>${esc(g.name)}</option>`).join(''):'<option>未添加游戏</option>';
+}
+
+function onGameChange(){selGame=parseInt($('#gameSel').value)||0;save('sg_sel',selGame)}
+function curGame(){return games[selGame]||{name:'未设置',genre:'',sell:''}}
+
+/* ========== THEMES ========== */
+function getCheckedThemes(){return themes.filter(t=>t.checked)}
+
+function renderThemes(){
+  const el=$('#customThemeArea');
+  if(!themes.length){
+    el.innerHTML='<div style="color:var(--t3);font-size:11px;text-align:center;padding:16px 10px;line-height:1.6">点击上方预置主题快速选择<br>或搜索各维度热点获取更多<br>也可下方手动添加</div>';
+  }else{
+    el.innerHTML=themes.map((t,i)=>{
+      const hasCases=(t.cases&&t.cases.length>0);
+      const hasHooks=(t.hooks&&t.hooks.length>0);
+      const detailId='td_'+i;
+      let html=`<div class="theme-card${t.checked?' checked':''}" onclick="toggleTheme(${i})">
+        <div class="tc-name">${esc(t.name)}</div>
+        <div class="tc-desc">${esc(t.desc)}</div>
+        <div class="tc-tags">${(t.tags||[]).map(tg=>`<span class="tc-tag ${tg.type}">${esc(tg.label)}</span>`).join('')}</div>`;
+      if(hasCases||hasHooks){
+        html+=`<div class="tc-detail-toggle" onclick="event.stopPropagation();toggleDetail('${detailId}')">▸ 详情</div>
+        <div class="tc-detail" id="${detailId}">`;
+        if(hasHooks)html+=`<div class="tc-detail-sec"><b>钩子：</b>${t.hooks.map(h=>'<div class="tc-detail-item">'+esc(h)+'</div>').join('')}</div>`;
+        if(hasCases)html+=`<div class="tc-detail-sec"><b>案例：</b>${t.cases.map(c=>'<div class="tc-detail-item">'+esc(c)+'</div>').join('')}</div>`;
+        html+=`</div>`;
+      }
+      html+=`</div>`;
+      return html;
+    }).join('');
+  }
+  updSelDisplay();renderPresets();
+}
+function toggleDetail(id){
+  const el=$('#'+id);
+  if(!el)return;
+  const toggle=el.previousElementSibling;
+  if(el.style.display==='block'){el.style.display='none';if(toggle)toggle.textContent='▸ 详情';}
+  else{el.style.display='block';if(toggle)toggle.textContent='▾ 详情';}
+}
+
+function toggleTheme(i){themes[i].checked=!themes[i].checked;renderThemes()}
+
+function updSelDisplay(){
+  const sel=getCheckedThemes();
+  $('#selThemeDisplay').textContent=sel.length?sel.map(t=>t.name).join(' + '):'未选择';
+  $('#selThemeDisplay').style.color=sel.length?'var(--pl)':'var(--t3)';
+}
+
+function toggleAddTheme(){$('#addThemeWrap').classList.toggle('open')}
+
+function addManualTheme(){
+  const name=$('#addThemeName').value.trim();
+  if(!name){toast('请填写主题名称');return}
+  const desc=$('#addThemeDesc').value.trim();
+  const type=$('#addThemeType').value;
+  const typeLabel=$('#addThemeType').selectedOptions[0].textContent;
+  themes.push({name,desc:desc||'手动添加',tags:[{label:typeLabel,type},{label:'自定义',type:'vis'}],checked:true});
+  $('#addThemeName').value='';$('#addThemeDesc').value='';
+  renderThemes();toast('已添加');
+}
+
+/* ========== THEME SCAN (分维度搜索) ========== */
+const DIM_CONFIG={
+  topic:{
+    label:'热门话题',icon:'🔥',tag:'热门话题',
+    prompt(plat,game){return `你是买量视频创意研究员。搜索今天（${new Date().toLocaleDateString('zh-CN')}）${plat}及全网最火的话题、热搜、热梗、社会事件。
+
+重点关注：
+- 可被手游买量视频借势的热门话题
+- 当日网络热梗、烂梗、流行语及其起源
+- 社会情绪热点（如打工人、逆袭、焦虑、发疯文学）
+- 影视综艺热门讨论
+
+每个话题要求：
+1. 说明为什么能用于买量（一句话）
+2. 附带具体热度数据（热搜排名、讨论量等）
+3. 给出2个可套用到游戏买量视频的钩子做法
+4. 列出1-2个利用该话题的爆款视频案例（附数据）
+
+输出5-8个话题，JSON数组格式：
+[{"name":"话题名","desc":"为什么能吸量","tag":"热门话题","heat":"高/中","hooks":["钩子做法1","钩子做法2"],"cases":["案例1：XX平台某视频XX万赞，用了XX手法","案例2"]}]
+
+只输出JSON数组。`}
+  },
+  viral:{
+    label:'爆款视频',icon:'🎬',tag:'爆款视频',
+    prompt(plat,game){return `你是买量视频数据分析师。搜索最近7天${plat}上手游/小游戏买量视频中跑量最好、互动最高的视频类型和套路。
+
+${game?`当前游戏类型：${game.genre||game.name}，重点搜索同类游戏的爆款素材。`:''}
+
+重点关注：
+- 最近哪种视频类型（录屏/CG/情景剧/口播）效果最好
+- 双主线玩法（引流玩法+真实玩法）的最新套路
+- 爆款视频的具体结构（时长、节奏、转折点）
+- 哪些视觉风格最吸量（3D/2D/像素/写实）
+
+每个类型要求：
+1. 描述这种视频的核心套路
+2. 给出具体爆款案例（内容描述+数据）
+3. 推荐的前3秒钩子做法
+
+输出5-8个类型，JSON数组格式：
+[{"name":"视频类型/套路名","desc":"核心吸量逻辑","tag":"爆款视频","heat":"高/中","hooks":["钩子做法1","钩子做法2"],"cases":["案例：XX游戏某视频XX万播放，结构是XX","案例2"]}]
+
+只输出JSON数组。`}
+  },
+  character:{
+    label:'热门角色',icon:'⭐',tag:'热门角色',
+    prompt(plat,game){return `你是买量素材创意研究员。搜索最近${plat}及全网最有流量的人物、角色、梅梅(meme)形象。
+
+重点关注：
+- 最近爆火的网红/KOL形象（如东北雨姐、闻会军类型）
+- 热门动漫/影视角色（有二创热度的）
+- 最近爆火的梅梅(meme)角色/表情包人物
+- AI生成的热门虚拟形象
+- 已有买量视频成功使用的流量角色
+
+每个角色/形象要求：
+1. 视觉特征描述（外貌、服装、标志性动作）
+2. 为什么火、粉丝画像
+3. 适合什么类型的买量场景
+4. 使用这个角色的爆款案例
+
+输出5-8个角色，JSON数组格式：
+[{"name":"角色名","desc":"为什么有流量","tag":"热门角色","heat":"高/中","hooks":["用该角色的钩子做法1","做法2"],"cases":["案例：XX平台某视频用了该角色XX万赞","案例2"]}]
+
+只输出JSON数组。`}
+  },
+  competitor:{
+    label:'竞品动态',icon:'📈',tag:'竞品动态',
+    prompt(plat,game){return `你是买量竞品分析师。搜索最近7天${plat}上${game?`与「${game.name}」（${game.genre||''}）同类型的手游/小游戏`:'热门手游/小游戏'}的买量投放动态。
+
+重点关注：
+- 同类游戏最近在投什么类型的素材
+- 哪些竞品的素材跑量效果好
+- 竞品用了什么新的创意方向或钩子
+- 值得借鉴/差异化的投放策略
+
+每个竞品动态要求：
+1. 竞品游戏名称和素材方向
+2. 分析其创意亮点和可借鉴之处
+3. 具体素材案例描述
+
+输出4-6个竞品分析，JSON数组格式：
+[{"name":"竞品方向/策略","desc":"核心创意逻辑","tag":"竞品动态","heat":"高/中","hooks":["该策略的钩子做法1","做法2"],"cases":["案例：XX游戏某素材XX套路，预估XX曝光","案例2"]}]
+
+只输出JSON数组。`}
+  },
+  hook:{
+    label:'钩子套路',icon:'🎣',tag:'钩子套路',
+    prompt(plat,game){return `你是买量视频钩子（Hook）专家。搜索最近${plat}上效果最好的买量视频"前3秒钩子"类型。
+
+${game?`当前游戏：${game.name}（${game.genre||''}），优先搜索适合该类型的钩子。`:''}
+
+重点关注：
+- 最近CTR最高的前3秒画面套路
+- 新出现的钩子类型（非常规套路）
+- 不同视频类型（录屏/CG/口播/情景剧）各自最强的钩子
+- 钩子的具体执行方式（画面+文字+音效如何配合）
+
+每个钩子套路要求：
+1. 具体描述钩子的执行方式（第1秒做什么、第2秒做什么、第3秒做什么）
+2. 为什么有效（心理学原理）
+3. 使用此钩子的爆款视频案例
+
+输出5-8个钩子套路，JSON数组格式：
+[{"name":"钩子名称","desc":"为什么有效（一句话）","tag":"钩子套路","heat":"高/中","hooks":["第1秒：XX 第2秒：XX 第3秒：XX"],"cases":["案例：XX视频用了此钩子XX万播放","案例2"]}]
+
+只输出JSON数组。`}
+  }
+};
+const DIM_KEYS=Object.keys(DIM_CONFIG);
+
+/* ========== SELL TAGS (卖点标签体系) ========== */
+const SELL_TAGS={
+  mainline:{label:'主线',color:'var(--p)',items:['副本','任务','挂机','冒险']},
+  growth:  {label:'成长',color:'var(--g)',items:['角色','战斗(割草)','营地','研究院','神器','装备']},
+  collect: {label:'收集',color:'var(--y)',items:['角色收集','种族']},
+  social:  {label:'社交',color:'#BF5AF2',items:['聊天框','部落','部落红包','跨服战斗','PVP','排行榜','好友系统','部落榜','部落boss']},
+  create:  {label:'创造',color:'#FF9F0A',items:['布阵']},
+  unknown: {label:'未知',color:'var(--r)',items:['普通许愿','高级许愿','种族许愿','宝箱']},
+  support: {label:'辅助',color:'var(--t2)',items:['福利','小游戏']}
+};
+const SELL_DESC={
+  mainline:'核心玩法循环——游戏有什么可以玩',
+  growth:'数值成长爽感——角色变强的可视化路径',
+  collect:'收集满足感——集齐角色/种族的驱动力',
+  social:'社交归属+竞争——有人一起玩、排名争第一',
+  create:'自由策略感——我的阵容我做主',
+  unknown:'博彩刺激感——抽卡/开箱的悬念与惊喜',
+  support:'白嫖/福利——降低门槛+额外乐趣'
+};
+
+let _selectedSellTags=[];
+
+function renderSellBar(){
+  const body=$('#sellBody');
+  body.innerHTML='';
+  for(const[gid,g]of Object.entries(SELL_TAGS)){
+    const row=document.createElement('div');
+    row.className='sell-group';
+    row.innerHTML=`<div class="sell-group-label" style="color:${g.color}">${g.label}</div><div class="sell-group-chips">${
+      g.items.map(it=>`<button class="sell-chip${_selectedSellTags.includes(it)?' active':''}" data-tag="${it}" onclick="toggleSellTag('${it}',this)">${it}</button>`).join('')
+    }</div>`;
+    body.appendChild(row);
+  }
+  updSellSummary();
+}
+
+function toggleSellBar(){
+  const hd=$('#sellBarHd'),bd=$('#sellBody');
+  hd.classList.toggle('open');
+  bd.classList.toggle('open');
+}
+
+function toggleSellTag(tag,el){
+  const idx=_selectedSellTags.indexOf(tag);
+  if(idx>=0){_selectedSellTags.splice(idx,1);el.classList.remove('active')}
+  else{_selectedSellTags.push(tag);el.classList.add('active')}
+  updSellSummary();
+}
+
+function updSellSummary(){
+  const el=$('#sellSummary');
+  if(!_selectedSellTags.length){el.textContent='点击展开选择';return}
+  const groups=[];
+  for(const[gid,g]of Object.entries(SELL_TAGS)){
+    const matched=g.items.filter(it=>_selectedSellTags.includes(it));
+    if(matched.length)groups.push(`${g.label}(${matched.join('/')})`);
+  }
+  el.textContent='已选：'+groups.join(' · ');
+}
+
+function getSellTagsPrompt(){
+  if(!_selectedSellTags.length)return '';
+  const parts=[];
+  for(const[gid,g]of Object.entries(SELL_TAGS)){
+    const matched=g.items.filter(it=>_selectedSellTags.includes(it));
+    if(matched.length){
+      parts.push(`**${g.label}**（${SELL_DESC[gid]}）→ 重点展示：${matched.join('、')}`);
+    }
+  }
+  return parts.join('\n');
+}
+
+function scanByDimension(dim){
+  const cfg=DIM_CONFIG[dim];
+  if(!cfg)return;
+  const plat=$('#searchPlatform').value;
+  const game=curGame();
+  const prompt=cfg.prompt(plat,game);
+
+  if(isManualFor('search')){
+    navigator.clipboard.writeText(prompt).then(()=>{
+      addMsg('ai',`✅ 「${cfg.label}」搜索提示词已复制到剪贴板\n\n粘贴到 Perplexity / 任意AI，获取结果后：`);
+      addPasteBtn('theme');
+    }).catch(()=>addMsg('ai','请手动复制以下提示词发给AI：\n\n'+prompt));
+    return;
+  }
+
+  const btn=$(`.dim-btn[data-dim="${dim}"]`);
+  if(btn){btn.classList.add('loading');btn.textContent=cfg.icon+' 搜索中…';}
+  addMsg('ai',`正在搜索「${cfg.label}」（${plat}）…`);
+
+  callAI([{role:'user',content:prompt}],null,(final,err)=>{
+    if(btn){btn.classList.remove('loading');btn.textContent=cfg.icon+' '+cfg.label;}
+    if(err){
+      addMsg('ai',`❌ 「${cfg.label}」搜索失败：${err}`);
+      return;
+    }
+    if(btn)btn.classList.add('done');
+    setTimeout(()=>{if(btn)btn.classList.remove('done')},3000);
+    parseThemeResult(final,cfg.label);
+  },'search');
+}
+
+function scanAllDimensions(){
+  const btn=$('#scanAllBtn');
+  if(btn){btn.disabled=true;btn.textContent='搜索中…';}
+  let pending=DIM_KEYS.length;
+  DIM_KEYS.forEach((dim,i)=>{
+    setTimeout(()=>scanByDimension(dim),i*800);
+  });
+  setTimeout(()=>{
+    if(btn){btn.disabled=false;btn.textContent='全部搜索';}
+  },DIM_KEYS.length*800+15000);
+}
+
+function scanThemes(){scanAllDimensions()}
+
+function parseThemeResult(text,dimLabel){
+  try{
+    let json=text;
+    const m=text.match(/\[[\s\S]*\]/);
+    if(m)json=m[0];
+    const arr=JSON.parse(json);
+    const tagMap={'题材美学':'vis','情绪共鸣':'emo','网络热梗':'meme','影视热点':'hot','爽感公式':'vis','反差猎奇':'emo',
+      '热门话题':'hot','爆款视频':'vis','热门角色':'meme','竞品动态':'emo','钩子套路':'vis'};
+    const newThemes=arr.map(t=>({
+      name:t.name,
+      desc:t.desc,
+      tags:[{label:t.tag||dimLabel||'未分类',type:tagMap[t.tag]||tagMap[dimLabel]||'vis'},{label:t.heat==='高'?'🔥 高热':'中热',type:t.heat==='高'?'hot':'emo'}],
+      hooks:Array.isArray(t.hooks)?t.hooks:[],
+      cases:Array.isArray(t.cases)?t.cases:[],
+      checked:false
+    }));
+    themes=themes.concat(newThemes);
+    renderThemes();
+    const hookCount=newThemes.reduce((s,t)=>s+(t.hooks||[]).length,0);
+    const caseCount=newThemes.reduce((s,t)=>s+(t.cases||[]).length,0);
+    let info=`✅ 「${dimLabel||'搜索'}」获取 ${newThemes.length} 个结果`;
+    if(hookCount)info+=`（${hookCount} 个钩子`;
+    if(caseCount)info+=(hookCount?'、':' (')+`${caseCount} 个案例`;
+    if(hookCount||caseCount)info+='）';
+    info+='，点击左侧卡片勾选。';
+    addMsg('ai',info);
+  }catch(e){
+    addMsg('ai',`「${dimLabel||'搜索'}」结果解析失败，请手动添加。\n\n原始内容：\n`+text);
+  }
+}
+
+/* ========== SYSTEM PROMPT ========== */
+function matchHooks(themeNames){
+  if(!themeNames||!themeNames.length)return HOOK_PATTERNS.slice(0,5);
+  const presetIds=themeNames.map(n=>{const p=PRESETS.find(x=>x.name===n);return p?p.id:''}).filter(Boolean);
+  const scored=HOOK_PATTERNS.map(h=>{
+    const s=h.scenes.filter(sc=>presetIds.includes(sc)).length;
+    return {hook:h,score:s};
+  }).sort((a,b)=>b.score-a.score);
+  const result=scored.filter(x=>x.score>0).slice(0,5).map(x=>x.hook);
+  if(result.length<3)return scored.slice(0,5).map(x=>x.hook);
+  return result;
+}
+
+function getRhythm(dur){
+  return RHYTHM_TEMPLATES[dur]||RHYTHM_TEMPLATES['15秒'];
+}
+
+function sysPrompt(){
+  const g=curGame();
+  const sel=getCheckedThemes();
+  const themeStr=sel.length?sel.map(t=>`「${t.name}」：${t.desc}`).join('\n'):'（用户未选择主题，请根据用户输入自行判断）';
+  const dur=$('#durSel').value;
+  const ratio=$('#ratioSel').value;
+  const audience=getAudience();
+  const hero=getHero();
+  const collab=getCollab();
+  const sType=getScriptTypePrompt();
+  const sTypeLabel=getScriptTypeLabel();
+
+  const themeNames=sel.map(t=>t.name);
+  const hooks=matchHooks(themeNames);
+  const hookStr=hooks.map((h,i)=>`${i+1}. **${h.name}**：${h.desc}\n   示例：${h.example}`).join('\n');
+
+  const rhythm=getRhythm(dur);
+  const rhythmStr=rhythm.segments.map(s=>
+    `- **${s.range}【${s.role}】** 信息密度:${s.density} | 镜头:${s.cuts} | 情绪:${s.emotion}\n  要求：${s.note}`
+  ).join('\n');
+
+  const themeHooks=(sel||[]).filter(t=>t.hooks&&t.hooks.length).map(t=>`「${t.name}」的爆款钩子：${t.hooks.join('、')}`).join('\n');
+  const themeCases=(sel||[]).filter(t=>t.cases&&t.cases.length).map(t=>`「${t.name}」参考案例：\n${t.cases.map(c=>'  - '+c).join('\n')}`).join('\n');
+
+  return `你是顶级手游买量（UA）视频创意总监，专精"前3秒抓住用户"。
+
+## 第一原则：钩子决定一切
+
+买量视频的成败取决于前3秒。用户的拇指在0.5秒内决定划走还是停留。你的首要任务是选择并执行一个强力钩子。
+
+### 可用钩子套路（从以下模板中选一个或组合）
+${hookStr}
+${themeHooks?'\n### 当前主题验证有效的钩子\n'+themeHooks:''}
+${themeCases?'\n### 爆款参考案例（来自实时搜索）\n'+themeCases:''}
+
+**规则：**
+- 必须在脚本开头标注所选的钩子类型，如：【钩子：悬念反问 × 视觉暴击】
+- 前3秒内必须完成钩子的核心视觉冲击，0废帧
+- 钩子可以组合使用（如"数字冲击+对比冲突"）
+
+---
+
+## 第二原则：节奏蓝图（${dur}）
+
+本次视频时长 ${dur}，必须严格按以下节奏蓝图分配每一秒：
+
+${rhythmStr}
+
+**规则：**
+- 每个分镜必须标注其节奏功能：钩子/铺垫/升级/高潮/CTA
+- 不允许出现"过渡""衔接"等无信息量的段落
+- 信息密度标注"极高"的段落，每秒至少2个视觉变化
+
+---
+
+## 任务上下文
+
+### 游戏信息
+- 名称：${g.name}
+- 类型：${g.genre||'未设置'}
+- 卖点：${g.sell||'未设置'}
+${getSellTagsPrompt()?`
+### 本次重点展示的卖点
+${getSellTagsPrompt()}
+
+脚本内容必须围绕以上选中的卖点展开，画面/口播需要直接体现这些游戏特性。
+`:''}
+### 吸量主题
+${themeStr}
+主题与游戏可以完全无关，目的是用热门题材的视觉冲击力吸引停留。
+
+### 目标用户画像
+${audience||'未指定（请根据游戏类型推断）'}
+
+### 主角人设
+${hero||'使用游戏原创角色（Q版卡通风格）'}
+${hero?'注意：真人网红风格需转化为视觉描述，如"东北雨姐风格"→"东北大姐形象：高马尾、花棉袄、大金链、豪爽表情"。':''}
+${collab?`
+### 联动IP
+当前联动IP：**${collab}**
+${_collabInfo?`
+【联动IP详细资料（来自实时搜索）】
+${_collabInfo.characters?.length?'核心角色视觉特征：\n'+_collabInfo.characters.map(c=>`- ${c.name}：${c.visual}`).join('\n'):''}
+${_collabInfo.scenes?.length?'经典场景/元素：'+_collabInfo.scenes.join('、'):''}
+${_collabInfo.memes?.length?'热梗/台词（可融入脚本增加共鸣）：'+_collabInfo.memes.join('、'):''}
+${_collabInfo.style?.length?'推荐视觉风格：'+_collabInfo.style.join('、'):''}
+${_collabInfo.creative_hooks?.length?'买量创意切入点：'+_collabInfo.creative_hooks.join('、'):''}
+${_collabInfo.trending?'当前热度：'+_collabInfo.trending:''}
+`:'（未搜索详情，请根据已知信息处理）'}
+要求：
+- 脚本中必须自然融入该联动IP的角色/元素/梗
+- 联动角色需与游戏角色产生互动（对战/合作/混搭/反差）
+- 角色形象使用上面提供的视觉特征描述，保持IP辨识度
+- 联动元素应出现在钩子段（前3秒）和高潮段，最大化吸引力
+- 优先使用热梗/经典台词增加粉丝共鸣
+`:''}
+### 视频参数
+- 时长：${dur}
+- 画面比例：${ratio}
+
+### 构图指南（${ratio}）
+${ratio==='9:16'?'竖屏9:16：主体居中偏上占60-70%高度，动作以上下为主，文字区域在上1/3或下1/3。'
+:ratio==='16:9'?'横屏16:9：主体偏三分线，适合全景大场面，双主线可分屏左右各50%，动作以左右为主。'
+:'正方形1:1：主体居中，构图简洁，适合单一焦点展示。'}
+
+---
+
+## 脚本类型：${sTypeLabel}
+
+${sType.role}
+
+---
+
+## 输出格式
+
+### 分镜脚本格式
+\`\`\`
+【钩子：所选钩子名称】
+
+${sType.format}
+\`\`\`
+
+**每段要求：**
+${sType.rules}
+
+**生成分镜脚本时，只输出脚本本身，不要输出Seedance提示词。**
+
+### Seedance 2.0 转换（仅在用户要求时）
+将分镜压缩成≤2000字符的提示词，保留核心视觉信息。
+
+## 内容安全红线
+禁止：真人肖像、知名IP名称、真实武器（→能量法器）、血腥（→光点消散）、恐怖（丧尸需Q版化）、赌博色情
+怪物死亡统一用"化为光点消散+金币弹出"`;
+}
+
+/* ========== API ========== */
+const URLS={openrouter:'https://openrouter.ai/api/v1/chat/completions',perplexity:'https://api.perplexity.ai/chat/completions',deepseek:'https://api.deepseek.com/chat/completions',openai:'https://api.openai.com/v1/chat/completions'};
+function getCfg(){
+  const c=load('sg_cfg')||{};
+  if(c.provider&&!c.genProv&&!c.orKey){
+    c.searchProv=c.provider;c.searchKey=c.key;c.searchModel=c.model;c.searchEp=c.endpoint;
+    c.genProv=c.provider;c.genKey=c.key;c.genModel=c.model;c.genEp=c.endpoint;
+    save('sg_cfg',c);
+  }
+  const MIGRATE={
+    'perplexity/sonar-pro':'perplexity/sonar-pro-search',
+    'anthropic/claude-sonnet-4':'anthropic/claude-sonnet-4.6',
+    'anthropic/claude-sonnet-4.5':'anthropic/claude-sonnet-4.6',
+    'deepseek/deepseek-chat-v3-0324':'deepseek/deepseek-v3.2',
+    'google/gemini-2.5-pro':'google/gemini-3.1-pro-preview',
+    'openai/gpt-4.1':'deepseek/deepseek-v3.2'
+  };
+  let dirty=false;
+  ['orSearchModel','orGenModel'].forEach(k=>{
+    if(c[k]&&MIGRATE[c[k]]){c[k]=MIGRATE[c[k]];dirty=true;}
+  });
+  if(dirty)save('sg_cfg',c);
+  return c;
+}
+
+function getApiFor(task){
+  const c=getCfg();
+  if(task==='search'){
+    if(c.orKey) return {provider:'openrouter',key:c.orKey,endpoint:'',model:c.orSearchModel||'perplexity/sonar'};
+    if(c.searchProv&&c.searchKey) return {provider:c.searchProv,key:c.searchKey,endpoint:c.searchEp||'',model:c.searchModel||'sonar'};
+    return {provider:'manual',key:'',endpoint:'',model:''};
+  }
+  if(c.orKey) return {provider:'openrouter',key:c.orKey,endpoint:'',model:c.orGenModel||'deepseek/deepseek-v3.2'};
+  if(c.genProv&&c.genKey) return {provider:c.genProv,key:c.genKey,endpoint:c.genEp||'',model:c.genModel||'deepseek-chat'};
+  return {provider:'manual',key:'',endpoint:'',model:''};
+}
+
+function isManualFor(task){const a=getApiFor(task);return !a.key||a.provider==='manual'}
+function isManual(){return isManualFor('gen')}
+
+async function callAI(messages,onChunk,onDone,task='gen'){
+  const a=getApiFor(task);
+  const url=URLS[a.provider]||a.endpoint||'';
+  if(!url||!a.key){onDone(null,'该任务的API未配置');return}
+  const hdrs={'Content-Type':'application/json','Authorization':`Bearer ${a.key}`};
+  if(a.provider==='openrouter'){
+    const ref=location.protocol==='file:'?'https://script-generator.local':location.href;
+    hdrs['HTTP-Referer']=ref;
+    hdrs['X-Title']='ScriptGenerator';
+  }
+  const wantStream=!!onChunk;
+  try{
+    const resp=await fetch(url,{
+      method:'POST',headers:hdrs,
+      body:JSON.stringify({model:a.model,messages,stream:wantStream,temperature:0.85,max_tokens:4096})
+    });
+    if(!resp.ok){
+      const errText=(await resp.text()).slice(0,300);
+      if(resp.status===403&&errText.includes('not available in your region')){
+        throw Object.assign(new Error(`当前模型 ${a.model} 在你的地区不可用。请到设置面板切换为 DeepSeek 或 Qwen 等国内可用模型。`),{_noRetry:true});
+      }
+      throw new Error(`${resp.status}: ${errText.slice(0,200)}`);
+    }
+
+    const ct=resp.headers.get('content-type')||'';
+
+    if(!wantStream||ct.includes('application/json')){
+      const json=await resp.json();
+      const txt=json.choices?.[0]?.message?.content||'';
+      if(!txt)throw new Error('API 返回内容为空');
+      if(onChunk)onChunk(txt);
+      onDone(txt,null);
+      return;
+    }
+
+    const reader=resp.body.getReader();
+    const dec=new TextDecoder();
+    let buf='',full='',rawAll='';
+    while(true){
+      const{done,value}=await reader.read();
+      if(done)break;
+      const chunk=dec.decode(value,{stream:true});
+      buf+=chunk;rawAll+=chunk;
+      const lines=buf.split('\n');buf=lines.pop()||'';
+      for(const l of lines){
+        const t=l.trim();if(!t||!t.startsWith('data:'))continue;
+        const d=t.slice(5).trim();if(d==='[DONE]')continue;
+        try{const j=JSON.parse(d);const c=j.choices?.[0]?.delta?.content;if(c){full+=c;onChunk(full)}}catch{}
+      }
+    }
+
+    if(!full&&rawAll.trim()){
+      try{
+        const j=JSON.parse(rawAll);
+        full=j.choices?.[0]?.message?.content||'';
+        if(full&&onChunk)onChunk(full);
+      }catch{}
+    }
+
+    if(!full)throw new Error('API 返回内容为空（流式解析失败）');
+    onDone(full,null);
+  }catch(e){
+    if(wantStream&&!e._noRetry){
+      console.warn('Streaming failed, retrying without stream:',e.message);
+      if(onChunk)onChunk('⏳ 流式连接失败，正在重试...');
+      try{
+        const resp2=await fetch(url,{
+          method:'POST',headers:hdrs,
+          body:JSON.stringify({model:a.model,messages,stream:false,temperature:0.85,max_tokens:4096})
+        });
+        if(!resp2.ok){const t=await resp2.text();throw new Error(`${resp2.status}: ${t.slice(0,200)}`)}
+        const json2=await resp2.json();
+        const txt2=json2.choices?.[0]?.message?.content||'';
+        if(!txt2)throw new Error('API 返回内容为空');
+        if(onChunk)onChunk(txt2);
+        onDone(txt2,null);return;
+      }catch(e2){onDone(null,e2.message);return}
+    }
+    onDone(null,e.message);
+  }
+}
+
+/* ========== CHAT ========== */
+function genScript(){
+  const sel=getCheckedThemes();
+  const dur=$('#durSel').value;
+  const hooks=matchHooks(sel.map(t=>t.name));
+  const hookNames=hooks.slice(0,3).map(h=>h.name).join('、');
+  const rhythm=getRhythm(dur);
+  const segCount=rhythm.segments.length;
+  const collab=getCollab();
+
+  const typeLabel=getScriptTypeLabel();
+  const typeId=getScriptType();
+  const isVoType=typeId.startsWith('vo_');
+  const typeHint={
+    vo_guide:'口播攻略——⚠️口播文案是核心！全程不停嘴，逐句写出完整旁白（主播风格讲解打法/流派/角色），画面只是辅助配图',
+    vo_intro:'口播介绍——⚠️口播文案是核心！全程不停嘴，逐句写出完整旁白（KOL安利游戏整体玩法卖点），画面只是辅助配图',
+    vo_benefit:'口播福利——⚠️口播文案是核心！全程不停嘴，逐句写出完整旁白（紧迫播报限时福利/活动），画面只是辅助配图',
+    showcase:'展示类——纯画面视觉冲击，无旁白无文字，角色特效/技能/皮肤的电影化展示',
+    cg_story:'CG剧情——电影化叙事CG短片，有故事线和情感弧线，通过剧情冲突吸引用户',
+    hook5s:'5秒片头钩子——极短注意力炸弹，3-5秒抓住拇指，输出多个钩子方案供选',
+    skit:'剧情类——短视频段子/小剧场，有角色对白和剧情反转，梗多反转狠'
+  };
+
+  const casesRef=sel.filter(t=>t.cases&&t.cases.length).map(t=>`「${t.name}」参考：${t.cases[0]}`).join('\n');
+
+  const isHook5s=(typeId==='hook5s');
+  let prompt=isHook5s
+    ?`生成 3-5 个不同的「5秒片头钩子」方案。
+
+脚本类型要求：${typeHint.hook5s}
+
+要求：
+- 每个钩子方案独立成立，严格控制3-5秒
+- 标明每个钩子的核心原理（好奇/恐惧/贪婪/爽感/悬念）
+- 可结合所选主题，也可使用万能钩子套路
+- 方案之间风格差异化，覆盖不同钩子类型
+- 推荐钩子参考：${hookNames}
+- 严格按照「${typeLabel}」的输出格式要求生成`
+    :`根据我选的主题，生成一个 ${dur} 的「${typeLabel}」类型分镜脚本。
+
+脚本类型要求：${typeHint[typeId]||typeHint.vo_guide}
+
+要求：
+- 从钩子库中选择最适合的钩子（推荐：${hookNames}），前3秒必须完成核心视觉冲击
+- 严格按 ${segCount} 段节奏蓝图分配内容，每段标注节奏功能
+- 节奏紧凑无废镜，信息密度"极高"的段落每秒至少2个视觉变化
+- 开头标注所用的钩子类型
+- 严格按照「${typeLabel}」的输出格式要求生成`;
+  if(isVoType)prompt+=`\n\n⚠️ 关键提醒：这是口播类型脚本，口播文案是绝对主体！
+- 每一段的"口播文案"字段必须写出完整的逐句旁白，占该段60%以上篇幅
+- 全程不能有任何一秒没有口播，从第1秒说到最后1秒
+- 禁止用"讲解XX""介绍XX"等概括性描述代替实际口播内容，必须写出真实的每一句话
+- "配合画面"只需1-2句简短描述，不要喧宾夺主`;
+  if(casesRef)prompt+=`\n\n参考爆款案例（借鉴套路但不要照搬）：\n${casesRef}`;
+  const sellStr=getSellTagsPrompt();
+  if(sellStr)prompt+=`\n\n重点展示的卖点：\n${sellStr}\n脚本内容需围绕这些卖点展开。`;
+  if(collab){
+    prompt+=`\n- 联动IP「${collab}」：必须在前3秒钩子和高潮段融入联动角色/元素，强化吸引力`;
+    if(_collabInfo?.characters?.length)prompt+=`\n- 联动角色可选用：${_collabInfo.characters.map(c=>c.name).join('、')}`;
+    if(_collabInfo?.memes?.length)prompt+=`\n- 可融入的热梗/台词：${_collabInfo.memes.slice(0,3).join('、')}`;
+  }
+
+  qk(prompt,true);
+}
+
+function send(){
+  const el=$('#chatInput');
+  const text=el.value.trim();
+  if(!text)return;
+  el.value='';el.style.height='auto';
+  addMsg('user',text);
+  chatHist.push({role:'user',content:text});
+
+  if(isManualFor('gen')){
+    const full=sysPrompt()+'\n\n---\n用户需求：'+text;
+    navigator.clipboard.writeText(full).then(()=>{
+      addMsg('ai','✅ 提示词已复制到剪贴板\n\n粘贴到 Cursor 对话 / 任意AI，拿到结果后：');
+      addPasteBtn('chat');
+    }).catch(()=>addMsg('ai','提示词复制失败，请手动复制'));
+    return;
+  }
+
+  const msgs=[{role:'system',content:sysPrompt()},...chatHist];
+  $('#sendBtn').disabled=true;
+  const aiEl=addMsg('ai','',true);
+  const bubble=aiEl.querySelector('.msg-b');
+
+  callAI(msgs,
+    p=>{bubble.textContent=p;scrollBtm()},
+    (final,err)=>{
+      $('#sendBtn').disabled=false;
+      if(err){bubble.textContent='❌ '+err;bubble.style.color='var(--r)'}
+      else{bubble.textContent=final;chatHist.push({role:'assistant',content:final});addActions(aiEl,final)}
+      scrollBtm();
+    }
+  ,'gen');
+}
+
+function qk(t,fresh){
+  if(fresh) archiveAndClear();
+  $('#chatInput').value=t;send();
+}
+
+/* ========== HISTORY ========== */
+let histSessions=load('sg_history')||[];
+
+function archiveAndClear(){
+  if(chatHist.length>0){
+    const aiMsgs=chatHist.filter(m=>m.role==='assistant');
+    if(aiMsgs.length>0){
+      const preview=aiMsgs[0].content.slice(0,60).replace(/\n/g,' ')+'...';
+      const game=curGame().name;
+      const selT=getCheckedThemes().map(t=>t.name).join('+');
+      histSessions.unshift({
+        id:Date.now(),
+        time:new Date().toLocaleString('zh-CN',{month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'}),
+        game,themes:selT||'无',preview,
+        messages:[...chatHist]
+      });
+      if(histSessions.length>30)histSessions=histSessions.slice(0,30);
+      save('sg_history',histSessions);
+      updHistCount();
+    }
+  }
+  chatHist=[];
+  const msgs=$('#msgs');
+  while(msgs.children.length>1)msgs.removeChild(msgs.lastChild);
+}
+
+function toggleHistPanel(){
+  const p=$('#histPanel');
+  const show=p.style.display==='none';
+  p.style.display=show?'block':'none';
+  if(show)renderHistList();
+}
+
+function updHistCount(){
+  const el=$('#histCount');
+  if(el)el.textContent=histSessions.length;
+}
+
+function renderHistList(){
+  const el=$('#histList');
+  if(!histSessions.length){
+    el.innerHTML='<div style="text-align:center;color:var(--t3);font-size:11px;padding:16px">暂无历史记录</div>';
+    return;
+  }
+  el.innerHTML=histSessions.map((s,i)=>`
+    <div style="display:flex;align-items:center;gap:8px;padding:7px 8px;border-radius:6px;cursor:pointer;transition:background .15s;border-bottom:1px solid var(--bd)" onmouseenter="this.style.background='var(--s2)'" onmouseleave="this.style.background=''" onclick="loadHist(${i})">
+      <div style="flex:1;min-width:0">
+        <div style="font-size:11px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(s.preview)}</div>
+        <div style="font-size:10px;color:var(--t3);margin-top:2px">${esc(s.time)} · ${esc(s.game)} · ${esc(s.themes)}</div>
+      </div>
+      <button class="btn btn-g btn-s" onclick="event.stopPropagation();delHist(${i})" style="color:var(--r);font-size:10px;flex-shrink:0">删除</button>
+    </div>`).join('');
+}
+
+function loadHist(i){
+  const s=histSessions[i];
+  if(!s)return;
+  archiveAndClear();
+  chatHist=[...s.messages];
+  s.messages.forEach(m=>{
+    if(m.role==='user')addMsg('user',m.content);
+    else{const el=addMsg('ai',m.content);addActions(el,m.content)}
+  });
+  scrollBtm();
+  $('#histPanel').style.display='none';
+  toast('已加载历史记录');
+}
+
+function delHist(i){
+  histSessions.splice(i,1);
+  save('sg_history',histSessions);
+  updHistCount();renderHistList();
+}
+
+function addMsg(role,text,streaming=false){
+  const c=$('#msgs');
+  const d=document.createElement('div');
+  d.className=`msg msg-${role==='user'?'user':'ai'}`;
+  let h='';
+  if(role!=='user')h+='<div class="msg-lbl">AI</div>';
+  h+=`<div class="msg-b">${streaming?'<div class="typing"><span></span><span></span><span></span></div>':esc(text)}</div>`;
+  if(role!=='user')h+='<div class="msg-acts"></div>';
+  d.innerHTML=h;c.appendChild(d);scrollBtm();return d;
+}
+
+function addActions(el,text){
+  const a=el.querySelector('.msg-acts');if(!a)return;
+  a.innerHTML='';
+  a.style.cssText='display:flex;gap:6px;margin-top:8px;flex-wrap:wrap;align-items:center';
+
+  const base=[
+    ['📋 复制',()=>navigator.clipboard.writeText(text).then(()=>toast('已复制'))],
+    ['💾 导出',()=>{const b=new Blob([text],{type:'text/plain;charset=utf-8'});const l=document.createElement('a');l.href=URL.createObjectURL(b);l.download=`脚本_${Date.now()}.txt`;l.click();toast('已导出')}]
+  ];
+  base.forEach(([label,fn])=>{const b=document.createElement('button');b.className='btn btn-g btn-s';b.textContent=label;b.onclick=fn;a.appendChild(b)});
+
+  const sep=document.createElement('div');
+  sep.style.cssText='width:100%;height:0';
+  a.appendChild(sep);
+
+  const big=[
+    ['🇬🇧 转 Seedance 2.0 英文提示词',()=>qk('把上面的脚本转成2000字符以内的Seedance 2.0英文提示词'),'var(--p)','#fff'],
+    ['🇨🇳 转 Seedance 2.0 中文提示词',()=>qk('把上面的脚本转成2000字符以内的Seedance 2.0中文提示词'),'var(--pl)','#fff'],
+    ['📋 导出 Lovart 分镜',()=>{const frames=parseFrames(text);if(!frames.length){toast('未解析到分镜');return;}const out=frames.map((f,i)=>`【分镜${i+1}】${f.name}\n${f.desc}`).join('\n\n');navigator.clipboard.writeText(out).then(()=>toast('分镜已复制，可粘贴到 Lovart.ai'))},'var(--y)','#1a1a2e']
+  ];
+  big.forEach(([label,fn,bg,color])=>{
+    const b=document.createElement('button');
+    b.textContent=label;b.onclick=fn;
+    b.style.cssText=`padding:8px 16px;border-radius:8px;font-size:12px;font-weight:600;border:none;cursor:pointer;background:${bg};color:${color};transition:opacity .15s`;
+    b.onmouseenter=()=>b.style.opacity='0.85';
+    b.onmouseleave=()=>b.style.opacity='1';
+    a.appendChild(b);
+  });
+}
+
+function addPasteBtn(type){
+  const last=$('#msgs').lastElementChild;
+  const acts=last?.querySelector('.msg-acts');
+  if(!acts)return;
+  const b1=document.createElement('button');b1.className='btn btn-p btn-s';b1.textContent='📋 粘贴AI回复';
+  b1.onclick=async()=>{
+    try{const t=await navigator.clipboard.readText();if(!t?.trim()){toast('剪贴板为空');return}
+      if(type==='theme')parseThemeResult(t.trim());
+      else if(type==='hero')parseHeroResult(t.trim());
+      else{chatHist.push({role:'assistant',content:t.trim()});const el=addMsg('ai',t.trim());addActions(el,t.trim())}
+    }catch{showManualInput(type)}
+  };
+  const b2=document.createElement('button');b2.className='btn btn-g btn-s';b2.textContent='✏️ 手动粘贴';
+  b2.onclick=()=>showManualInput(type);
+  acts.appendChild(b1);acts.appendChild(b2);
+}
+
+function showManualInput(type){
+  const el=addMsg('ai','');
+  const bubble=el.querySelector('.msg-b');
+  bubble.innerHTML=`<textarea id="manualArea" rows="6" style="width:100%;background:var(--s3);border:1px solid var(--bd);border-radius:var(--r);padding:8px;color:var(--t1);font-size:12px;font-family:inherit;resize:vertical" placeholder="粘贴AI回复到这里..."></textarea>
+<div style="margin-top:6px"><button class="btn btn-p btn-s" onclick="submitManual('${type}')">确认导入</button></div>`;
+  scrollBtm();
+}
+
+function submitManual(type){
+  const area=$('#manualArea');if(!area)return;
+  const text=area.value.trim();if(!text){toast('内容为空');return}
+  area.closest('.msg').remove();
+  if(type==='theme')parseThemeResult(text);
+  else if(type==='hero')parseHeroResult(text);
+  else{chatHist.push({role:'assistant',content:text});const el=addMsg('ai',text);addActions(el,text)}
+}
+
+function scrollBtm(){const el=$('#msgs');el.scrollTop=el.scrollHeight}
+
+/* ========== CONFIG ========== */
+function openCfg(){$('#cfgModal').classList.add('open');loadCfgUI()}
+function closeCfg(){$('#cfgModal').classList.remove('open')}
+
+function provChgFor(prefix){
+  const sel=$('#c_'+prefix+'_prov');
+  const panel=$('#'+prefix+'ApiF');
+  const epWrap=$('#c_'+prefix+'_ep_w');
+  const modelIn=$('#c_'+prefix+'_model');
+  if(!sel)return;
+  const v=sel.value;
+  panel.style.display=(!v||v==='manual')?'none':'block';
+  if(epWrap)epWrap.style.display=v==='custom'?'block':'none';
+  const m={perplexity:'sonar',deepseek:'deepseek-chat',openai:'gpt-4o'};
+  if(m[v])modelIn.value=m[v];
+}
+
+$('#c_search_prov')?.addEventListener('change',()=>provChgFor('search'));
+$('#c_gen_prov')?.addEventListener('change',()=>provChgFor('gen'));
+
+function saveCfg(){
+  save('sg_cfg',{
+    orKey:$('#c_or_key').value,
+    orSearchModel:$('#c_or_search_model').value,
+    orGenModel:$('#c_or_gen_model').value,
+    qwenKey:$('#c_qwen_key').value,
+    qwenVideoModel:$('#c_qwen_video_model').value,
+    searchProv:$('#c_search_prov').value, searchKey:$('#c_search_key').value,
+    searchEp:$('#c_search_ep').value, searchModel:$('#c_search_model').value,
+    genProv:$('#c_gen_prov').value, genKey:$('#c_gen_key').value,
+    genEp:$('#c_gen_ep').value, genModel:$('#c_gen_model').value
+  });
+  closeCfg();updStatus();toast('已保存');
+}
+function loadCfgUI(){
+  const c=getCfg();
+  if(c.orKey)$('#c_or_key').value=c.orKey;
+  if(c.orSearchModel)$('#c_or_search_model').value=c.orSearchModel;
+  if(c.orGenModel)$('#c_or_gen_model').value=c.orGenModel;
+  if(c.qwenKey&&$('#c_qwen_key'))$('#c_qwen_key').value=c.qwenKey;
+  if(c.qwenVideoModel&&$('#c_qwen_video_model'))$('#c_qwen_video_model').value=c.qwenVideoModel;
+  if(c.searchProv)$('#c_search_prov').value=c.searchProv;
+  if(c.searchKey)$('#c_search_key').value=c.searchKey;
+  if(c.searchEp)$('#c_search_ep').value=c.searchEp;
+  if(c.searchModel)$('#c_search_model').value=c.searchModel;
+  if(c.genProv)$('#c_gen_prov').value=c.genProv;
+  if(c.genKey)$('#c_gen_key').value=c.genKey;
+  if(c.genEp)$('#c_gen_ep').value=c.genEp;
+  if(c.genModel)$('#c_gen_model').value=c.genModel;
+  provChgFor('search');
+  provChgFor('gen');
+  updStatus();
+}
+const MODEL_NAMES={
+  'perplexity/sonar':'Perplexity Sonar',
+  'perplexity/sonar-pro':'Sonar Pro',
+  'perplexity/sonar-pro-search':'Sonar Pro Search',
+  'google/gemini-3.1-pro-preview':'Gemini 3.1 Pro',
+  'anthropic/claude-sonnet-4.6':'Claude Sonnet 4.6',
+  'deepseek/deepseek-v3.2':'DeepSeek V3.2',
+  'deepseek/deepseek-r1':'DeepSeek R1',
+  'qwen/qwen3-235b-a22b':'Qwen3 235B',
+  'qwen/qwen3.5-vl-72b':'Qwen 3.5 VL 72B',
+  'qwen/qwen3.5-vl-32b':'Qwen 3.5 VL 32B',
+  'qwen3.5-plus':'Qwen 3.5 Plus',
+  'qwen3.5-flash':'Qwen 3.5 Flash',
+  'qwen3-vl-plus':'Qwen3 VL Plus',
+  'qwen-vl-max':'Qwen VL Max',
+  'qwen-vl-plus':'Qwen VL Plus'
+};
+function friendlyName(modelId){
+  if(!modelId)return '未配置';
+  return MODEL_NAMES[modelId]||modelId.split('/').pop();
+}
+
+const _apiTestCache={};
+function updStatus(){
+  const c=getCfg(),el=$('#statusLine');
+  const sApi=getApiFor('search');
+  const gApi=getApiFor('gen');
+  const sOk=sApi.provider!=='manual'&&!!sApi.key;
+  const gOk=gApi.provider!=='manual'&&!!gApi.key;
+
+  const gModel=gOk?gApi.model:'';
+  const sState=_apiTestCache['search']||'idle';
+  const gState=_apiTestCache['gen']||'idle';
+
+  function cls(ok,state){
+    if(!ok)return 's-err';
+    if(state==='checking')return 's-checking';
+    if(state==='ok')return 's-ok';
+    if(state==='fail')return 's-err';
+    return 's-ok';
+  }
+
+  const vHasQwen=!!c.qwenKey;
+  const vOk=vHasQwen;
+  const vState=_apiTestCache['video']||'idle';
+  const vMethod=vHasQwen?('千问 '+(c.qwenVideoModel||'qwen3.5-plus')):'未配置';
+
+  const sModel=sOk?sApi.model:'';
+  el.innerHTML=
+    `<span class="sgroup ${cls(sOk,sState)}" onclick="testApi('search')" title="点击验证搜索API"><span class="sdot"></span><span class="slbl">搜索</span><span class="sval">${sOk?friendlyName(sModel):'未配置'}</span></span>`+
+    `<span class="sgroup ${cls(gOk,gState)}" onclick="testApi('gen')" title="点击验证生成API"><span class="sdot"></span><span class="slbl">生成</span><span class="sval">${gOk?friendlyName(gModel):'未配置'}</span></span>`+
+    `<span class="sgroup ${vOk?cls(true,vState):'s-err'}" onclick="${vHasQwen?"testApi('video')":"openCfg()"}" title="${vHasQwen?'点击验证阿里云千问':'请配置阿里云千问 API Key'}"><span class="sdot"></span><span class="slbl">视频</span><span class="sval">${vMethod}</span></span>`+
+    `<span class="sgroup" style="opacity:.5;cursor:default" title="分镜图请到 Lovart.ai 制作"><span class="sdot" style="background:var(--y)"></span><span class="slbl">生图</span><span class="sval">Lovart.ai</span></span>`;
+}
+
+async function testApi(type){
+  const c=getCfg();
+  _apiTestCache[type]='checking';
+  updStatus();
+  try{
+    if(type==='video'){
+      if(!c.qwenKey)throw new Error('未配置阿里云千问 API Key');
+      const qModel=c.qwenVideoModel||'qwen3.5-plus';
+      const resp=await fetch('https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions',{
+        method:'POST',
+        headers:{'Content-Type':'application/json','Authorization':`Bearer ${c.qwenKey}`},
+        body:JSON.stringify({model:qModel,messages:[{role:'user',content:'ping'}],max_tokens:1})
+      });
+      if(!resp.ok)throw new Error(`DashScope ${resp.status}`);
+      _apiTestCache[type]='ok';
+      toast('阿里云千问 API 连接成功 ✓');
+    }else{
+      const api=getApiFor(type==='search'?'search':'gen');
+      if(api.provider==='manual'||!api.key)throw new Error('未配置 API Key');
+      const ep=api.provider==='openrouter'?URLS.openrouter:(URLS[api.provider]||(api.endpoint||URLS.openrouter));
+      const resp=await fetch(ep,{
+        method:'POST',
+        headers:{'Content-Type':'application/json','Authorization':`Bearer ${api.key}`,'HTTP-Referer':location.protocol==='file:'?'https://script-generator.local':location.href,'X-Title':'ScriptGenerator'},
+        body:JSON.stringify({model:api.model,messages:[{role:'user',content:'ping'}],max_tokens:1})
+      });
+      if(!resp.ok){const t=await resp.text();throw new Error(`${resp.status}`);}
+      _apiTestCache[type]='ok';
+      toast(`${type==='search'?'搜索':'生成'} API 连接成功 ✓`);
+    }
+  }catch(e){
+    _apiTestCache[type]='fail';
+    toast(`连接失败: ${e.message}`);
+  }
+  updStatus();
+  setTimeout(()=>{_apiTestCache[type]='idle';updStatus();},5000);
+}
+
+/* ========== UTILS ========== */
+function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2000)}
+$('#chatInput').addEventListener('input',function(){this.style.height='auto';this.style.height=Math.min(this.scrollHeight,140)+'px'});
+
+/* ========== AUDIENCE & HERO ========== */
+$('#audienceSel').addEventListener('change',function(){
+  $('#audienceCustom').style.display=this.value==='custom'?'inline-block':'none';
+});
+$('#heroSel').addEventListener('change',function(){
+  $('#heroCustom').style.display=this.value==='custom'?'inline-block':'none';
+});
+
+let heroChips=[];
+let _collabInfo=null;
+
+function searchCollabIP(){
+  const name=$('#collabCustom').value.trim();
+  if(!name){toast('请先填写联动IP名称');return}
+
+  const prompt=`你是IP/ACG研究员。请搜索「${name}」这个IP的详细信息，用于短视频买量创意制作。
+
+我需要以下信息：
+1. **核心角色**：列出3-6个最具代表性的角色，每个角色包含外貌特征（发型、服装、配色、标志性道具）的详细视觉描述
+2. **经典场景/元素**：最具辨识度的经典场景、标志性道具、招牌动作
+3. **经典台词/梗**：粉丝圈最热门的台词、梗、名场面
+4. **受众画像**：主要粉丝群体的年龄段和特征
+5. **当前热度**：最近是否有新作/联动/翻红/热搜等热点事件
+6. **视觉风格关键词**：该IP最适合的画面风格（如Q版、热血动漫风、水墨风等）
+7. **买量创意切入点**：该IP与手游买量视频结合的最佳创意方向（如哪些角色/场景/梗最能引发用户共鸣和点击）
+
+输出JSON格式：
+{"name":"IP名称","characters":[{"name":"角色名","visual":"详细视觉特征描述"}],"scenes":["经典场景1","经典场景2"],"memes":["热梗/台词1","热梗/台词2"],"audience":"受众描述","trending":"当前热度信息","style":["风格关键词"],"creative_hooks":["买量创意切入点"]}
+
+只输出JSON，不要其他内容。`;
+
+  if(isManualFor('search')){
+    navigator.clipboard.writeText(prompt).then(()=>{
+      addMsg('ai','✅ IP搜索提示词已复制，粘贴到任意AI后把结果发回来。');
+    });
+    return;
+  }
+
+  const api=getApiFor('search');
+  addMsg('ai',`正在通过 ${friendlyName(api.model)} 联网搜索「${name}」的IP信息...`);
+  const btn=$('#collabSearchBtn');
+  btn.disabled=true;btn.textContent='搜索中...';
+
+  callAI([{role:'user',content:prompt}],null,(final,err)=>{
+    btn.disabled=false;btn.textContent='🔍 搜索IP信息';
+    if(err){addMsg('ai',`❌ 搜索失败：${err}\n\n💡 建议：打开设置检查搜索模型配置，当前使用 ${friendlyName(api.model)}。可尝试切换其他搜索模型。`);return}
+    parseCollabResult(final,name);
+  },'search');
+}
+
+function parseCollabResult(text,ipName){
+  try{
+    const m=text.match(/\{[\s\S]*\}/);
+    const obj=JSON.parse(m?m[0]:text);
+    _collabInfo=obj;
+    _collabInfo._raw=text;
+
+    let summary=`✅ **「${obj.name||ipName}」IP信息已获取**\n\n`;
+    if(obj.characters?.length)summary+=`**核心角色（${obj.characters.length}个）**：${obj.characters.map(c=>c.name).join('、')}\n`;
+    if(obj.scenes?.length)summary+=`**经典场景**：${obj.scenes.slice(0,4).join('、')}\n`;
+    if(obj.memes?.length)summary+=`**热梗/台词**：${obj.memes.slice(0,4).join('、')}\n`;
+    if(obj.trending)summary+=`**当前热度**：${obj.trending}\n`;
+    if(obj.creative_hooks?.length)summary+=`**买量切入点**：${obj.creative_hooks.slice(0,3).join('、')}\n`;
+    summary+=`\n> 生成脚本时将自动融入以上信息`;
+
+    addMsg('ai',summary);
+  }catch{
+    _collabInfo={_raw:text,name:ipName};
+    addMsg('ai','搜索完成（JSON解析失败，将以原文注入）：\n'+text.slice(0,500));
+  }
+}
+
+function scanHeroes(){
+  const prompt=`你是短视频流量研究员。请列出当前（${new Date().toLocaleDateString('zh-CN')}）最有流量和辨识度的网络人物/形象/IP，适合用于手游买量视频的主角。
+
+要求：
+- 包含真人网红风格（如东北雨姐类型的人设，注意不能直接用真人，而是描述其风格特征供AI生成）
+- 包含虚拟形象/IP（如热门动漫、游戏角色的风格特征）
+- 包含当前热梗人物形象
+- 每个人物给出：名称、风格特征描述（外貌/穿着/气质关键词，用于AI视频生成）、为什么有流量
+
+输出JSON数组：
+[{"name":"人物/风格名","desc":"视觉特征描述","why":"为什么有流量"}]
+
+只输出JSON，不要其他内容。`;
+
+  if(isManualFor('search')){
+    navigator.clipboard.writeText(prompt).then(()=>{
+      addMsg('ai','✅ 搜索提示词已复制\n\n粘贴到 Cursor / 任意AI，拿到结果后：');
+      addPasteBtn('hero');
+    });
+    return;
+  }
+
+  addMsg('ai','正在通过联网API搜索热门人物...');
+  callAI([{role:'user',content:prompt}],null,(final,err)=>{
+    if(err){addMsg('ai','❌ '+err);return}
+    parseHeroResult(final);
+  },'search');
+}
+
+function parseHeroResult(text){
+  try{
+    const m=text.match(/\[[\s\S]*\]/);
+    const arr=JSON.parse(m?m[0]:text);
+    heroChips=arr;
+    renderHeroChips();
+    addMsg('ai',`✅ 找到 ${arr.length} 个热门人物/形象，顶栏已显示，点击选择。`);
+  }catch{
+    addMsg('ai','格式解析失败，原始内容：\n'+text);
+  }
+}
+
+function renderHeroChips(){
+  const el=$('#heroChips');
+  if(!heroChips.length){el.style.display='none';return}
+  el.style.display='flex';
+  el.innerHTML='<span style="font-size:10px;color:var(--t3);font-weight:600;margin-right:4px">热门人设：</span>'+
+    heroChips.map((h,i)=>`<span class="qb" style="font-size:10px;padding:3px 8px" onclick="pickHero(${i})" title="${esc(h.desc+' | '+h.why)}">${esc(h.name)}</span>`).join('');
+}
+
+function pickHero(i){
+  const h=heroChips[i];
+  $('#heroSel').value='custom';
+  $('#heroCustom').style.display='inline-block';
+  $('#heroCustom').value=h.name+'风格：'+h.desc;
+  toast('已选择：'+h.name);
+}
+
+function getAudience(){
+  const v=$('#audienceSel').value;
+  if(v==='custom')return $('#audienceCustom').value.trim();
+  const map={
+    '':'不限','male-18-24':'男性18-24岁，学生/游戏宅，追求刺激和新鲜感',
+    'male-25-35':'男性25-35岁，打工人/社畜，追求解压和逆袭爽感',
+    'male-35+':'男性35+，中年男性，追求休闲解压和怀旧',
+    'female-18-24':'女性18-24岁，二次元/追星/颜值党',
+    'female-25-35':'女性25-35岁，宝妈/职场女性，碎片时间休闲',
+    'general':'泛人群，下沉市场，追求简单易上手的休闲乐趣'
+  };
+  return map[v]||'';
+}
+
+function getHero(){
+  const v=$('#heroSel').value;
+  if(v==='custom')return $('#heroCustom').value.trim();
+  if(v==='auto-meme')return '自动选择当前最有流量的热梗人物风格作为主角';
+  return '';
+}
+
+
+function getCollab(){
+  const v=$('#collabSel').value;
+  if(!v)return '';
+  const name=$('#collabCustom').value.trim();
+  return name||'';
+}
+
+function getScriptType(){return $('#scriptTypeSel').value||'vo_guide'}
+
+function getScriptTypeLabel(){
+  const map={vo_guide:'口播攻略',vo_intro:'口播介绍',vo_benefit:'口播福利',showcase:'展示类',cg_story:'CG剧情',hook5s:'5秒片头钩子',skit:'剧情类'};
+  return map[getScriptType()]||'口播攻略';
+}
+
+function getScriptTypePrompt(){
+  const t=getScriptType();
+
+  const formats={
+    vo_guide:{
+      role:'你的脚本是「口播攻略」类型。⚠️ 口播文案是脚本的绝对核心，整个视频从头到尾都在说话，没有任何一秒是静音的。像游戏主播开麦讲解全程不停嘴。画面只是配合口播内容的辅助素材。',
+      format:`起始时间–结束时间【段落名称】[节奏功能]
+口播文案（核心）："完整逐句旁白，每句标注语气。这是本段最重要的内容，必须写满、写具体。"
+配合画面：跟随口播内容同步展示的游戏录屏画面
+字幕/标注：画面上叠加的重点数据或文字`,
+      rules:`⚠️ 最高优先级规则：口播文案 = 脚本主体
+- 每一段都必须有完整的口播文案，不允许任何一段缺少口播
+- 口播是连续不断的，上一段结尾和下一段开头之间不能有停顿空白
+- 口播文案要写出完整的每一句话，不能用"讲解XX""介绍XX"等概括性描述代替
+- 每段口播文案的篇幅应占该段总内容的60%以上，画面描述只是简短辅助
+
+口播风格要求：
+- 语气像老玩家带新手，口语化、有网感（"兄弟们这角色版本T0""大招点满配这套直接起飞"）
+- 要有具体数字和对比（"伤害直接翻3倍""从青铜打到王者""输出直接拉满"）
+- 每句话都有信息量，不说废话（禁止"接下来我们看看""然后呢"等水词）
+
+口播字数硬性要求（必须写满）：
+- 5秒≈20-25字（约3-4句）
+- 15秒≈50-65字（约8-10句）
+- 30秒≈100-130字（约15-20句）
+- 60秒≈180-220字（约25-35句）
+
+结构参考：开头抛结论（这角色强不强）→ 展示配装/加点 → 实战验证 → 数据结果 → 号召行动
+"配合画面"字段简短描述即可（1-2句），重心永远在口播文案上`
+    },
+    vo_intro:{
+      role:'你的脚本是「口播介绍」类型。⚠️ 口播文案是脚本的绝对核心，整个视频从头到尾都在说话，没有任何一秒是静音的。像KOL安利种草全程不停嘴。画面只是配合口播内容的辅助素材。',
+      format:`起始时间–结束时间【段落名称】[节奏功能]
+口播文案（核心）："完整逐句旁白，每句标注语气。这是本段最重要的内容，必须写满、写具体。"
+配合画面：跟随口播内容同步展示的游戏画面
+字幕/标注：画面上叠加的功能名称或亮点文字`,
+      rules:`⚠️ 最高优先级规则：口播文案 = 脚本主体
+- 每一段都必须有完整的口播文案，不允许任何一段缺少口播
+- 口播是连续不断的，全程都在说话，画面跟着口播走
+- 口播文案要写出完整的每一句话，不能用"介绍XX玩法""展示XX系统"等概括性描述代替
+- 每段口播文案的篇幅应占该段总内容的60%以上
+
+口播风格要求：
+- 语气像朋友安利，真实、有感染力（"这游戏也太上头了吧""玩了3天停不下来""关键还免费"）
+- 快节奏：每句话切一个新卖点，信息密度拉满
+- 口语化+网感，像短视频博主在镜头前聊天
+
+口播字数硬性要求（必须写满）：
+- 5秒≈20-25字 / 15秒≈50-65字 / 30秒≈100-130字 / 60秒≈180-220字
+
+结构参考：开头制造好奇（这什么神仙游戏）→ 快速过3-4个核心玩法 → 展示社交/竞技 → 强调免费/福利 → CTA
+"配合画面"字段简短描述即可（1-2句），重心永远在口播文案上`
+    },
+    vo_benefit:{
+      role:'你的脚本是「口播福利」类型。⚠️ 口播文案是脚本的绝对核心，整个视频从头到尾都在说话，没有任何一秒是静音的。像紧急福利播报全程不停嘴。画面只是配合口播内容的辅助素材。',
+      format:`起始时间–结束时间【段落名称】[节奏功能]
+口播文案（核心）："完整逐句旁白，每句标注语气。这是本段最重要的内容，必须写满、写具体。"
+配合画面：跟随口播内容同步展示的福利/活动画面
+字幕/标注：福利内容、倒计时、领取方式等关键信息`,
+      rules:`⚠️ 最高优先级规则：口播文案 = 脚本主体
+- 每一段都必须有完整的口播文案，不允许任何一段缺少口播
+- 口播是连续不断的，全程紧迫输出，画面跟着口播走
+- 口播文案要写出完整的每一句话，不能用"介绍活动内容""展示奖励"等概括性描述代替
+- 每段口播文案的篇幅应占该段总内容的60%以上
+
+口播风格要求：
+- 语气像紧急福利播报，兴奋+紧迫（"炸了炸了！""还剩3天赶紧冲""白嫖党狂喜""不领血亏"）
+- 每个福利点必须具体化（不要"丰厚奖励"，要"10连抽×5、SSR自选、专属皮肤全都白送"）
+- 全程保持紧迫感，反复暗示"过期就没了""错过等一年"
+
+口播字数硬性要求（必须写满）：
+- 5秒≈20-25字 / 15秒≈50-65字 / 30秒≈100-130字 / 60秒≈180-220字
+
+结构参考：开头爆炸性消息（联动/周年来了）→ 罗列核心福利（3-5个具体利益点）→ 展示限定内容 → 强调限时 → CTA
+"配合画面"字段简短描述即可（1-2句），重心永远在口播文案上`
+    },
+    showcase:{
+      role:'你的脚本是「展示类」类型——纯画面视觉冲击，无口播无文字旁白。用角色特效、技能释放、皮肤展示等画面的视觉震撼力吸引用户。像角色PV或技能展示。',
+      format:`起始时间–结束时间【段落名称】[节奏功能]
+画面描述：角色外观、技能特效、场景环境、镜头运动、光影色彩...`,
+      rules:`- 每段50-150字，聚焦单一视觉高光瞬间
+- 用具体视觉元素描述（不要"表现紧张感"，要"角色瞳孔收缩，背景闪烁红光"）
+- 重点展示：角色造型细节、大招释放全过程、特效粒子、打击感、皮肤质感
+- 镜头语言要电影化：环绕、升格慢动作、极速推拉、仰拍俯拍交替
+- 配合音乐节拍卡点：重拍对应视觉爆发（技能命中、变身完成等）
+- 无任何文字/旁白/UI，纯粹的视觉享受`
+    },
+    cg_story:{
+      role:'你的脚本是「CG剧情」类型——电影化叙事CG短片，有完整的故事线和情感弧线。通过角色命运和剧情冲突来吸引用户对游戏世界观产生兴趣。',
+      format:`起始时间–结束时间【段落名称】[节奏功能]
+画面描述：场景环境、角色动作与表情、镜头运动、光影氛围...
+剧情旁白/字幕："可选的旁白或画面字幕"`,
+      rules:`- 有明确的故事结构：铺垫→冲突→转折→高潮
+- 角色有情感变化，通过表情和动作传达（不依赖对白）
+- "剧情旁白/字幕"可选：简短的内心独白或场景说明文字
+- 画面质感追求电影感：景深、光影、慢动作、特写与远景交替
+- 末尾需留悬念或情感冲击点，激发"想知道后面发生了什么"
+- 适合表达：角色觉醒、背叛反转、最终决战、生死抉择等大叙事`
+    },
+    hook5s:{
+      role:'你的脚本是「5秒片头钩子」类型——极短的注意力炸弹，专门用于视频开头3-5秒抓住用户拇指。可独立使用，也可以拼接到其他视频前面。',
+      format:`起始时间–结束时间【画面】
+视觉冲击：画面核心内容（1句话）
+文字/音效：叠加文字或关键音效
+钩子原理：为什么能阻止划走（1句话）`,
+      rules:`- 总时长严格3-5秒，分2-3个画面，每个≤2秒
+- "视觉冲击"字段：用一句话描述该帧最抓眼球的元素
+- "文字/音效"字段：画面上的大字或关键音效（爆炸音/悬念音/叮咚音等）
+- "钩子原理"字段：简述该画面触发什么心理（好奇/恐惧/贪婪/爽感/悬念）
+- 每个钩子要能独立成立，不依赖后续内容就让人停下
+- 可使用的钩子模板：悬念反问、数字冲击、故意失败、视觉暴击、反转预告、禁忌好奇
+- 输出3-5个不同钩子方案供选择`
+    },
+    skit:{
+      role:'你的脚本是「剧情类」类型——短视频段子/小剧场风格，有角色对白和剧情反转。像抖音爆款短剧一样节奏快、梗多、反转狠。',
+      format:`起始时间–结束时间【段落名称】[节奏功能]
+角色/台词：角色名（表情/动作）："台词内容"
+画面描述：场景环境、镜头运动、角色站位...`,
+      rules:`- "角色/台词"必填：格式为 角色名（表情/动作）："台词"
+- 台词要短、有梗、有网感（每句≤15字，可用流行语/热梗）
+- 剧情结构：建立→意外→反转→爆梗，全程不超过3个场景
+- 角色性格鲜明且夸张化：菜鸟玩家、氪金大佬、毒舌NPC等
+- 反转要在预期之外（"以为是青铜其实是王者""以为是敌人其实是队友"）
+- 最后一个反转留给游戏本身，自然引出下载`
+    }
+  };
+
+  return formats[t]||formats.vo_guide;
+}
+
+/* ========== FRAME PARSER ========== */
+function parseFrames(text){
+  const frames=[];
+
+  const reg1=/(\d{1,2}[:\.\d]*\s*[–\-—~～]\s*\d{1,2}[:\.\d]*)\s*[【\[](.*?)[】\]]\s*([\s\S]*?)(?=\d{1,2}[:\.\d]*\s*[–\-—~～]|\n\n(?=\d)|$)/g;
+  let m;
+  while((m=reg1.exec(text))!==null){
+    const time=m[1].trim(),name=m[2].trim(),desc=m[3].trim();
+    if(desc.length>5)frames.push({time,name,desc});
+  }
+  if(frames.length)return frames;
+
+  const reg2=/[【\[](.*?)[】\]]\s*[（\(]?\s*(?:A线|B线|引流|真实)?\s*[）\)]?\s*\n([\s\S]*?)(?=\n[【\[]|$)/g;
+  while((m=reg2.exec(text))!==null){
+    const name=m[1].trim(),desc=m[2].trim();
+    if(desc.length>10)frames.push({time:`#${frames.length+1}`,name,desc});
+  }
+  if(frames.length)return frames;
+
+  const reg3=/(?:^|\n)\s*(?:分镜|镜头|场景|Shot|Scene)\s*(\d+)\s*[：:．.]?\s*([\s\S]*?)(?=\n\s*(?:分镜|镜头|场景|Shot|Scene)\s*\d|$)/gi;
+  while((m=reg3.exec(text))!==null){
+    const desc=m[2].trim();
+    if(desc.length>10)frames.push({time:`#${m[1]}`,name:`分镜${m[1]}`,desc});
+  }
+  if(frames.length)return frames;
+
+  const reg4=/(?:^|\n)\s*(\d+)\s*[\.、）\)]\s*([\s\S]*?)(?=\n\s*\d+\s*[\.、）\)]|$)/g;
+  while((m=reg4.exec(text))!==null){
+    const desc=m[2].trim();
+    if(desc.length>15)frames.push({time:`#${m[1]}`,name:`分镜${m[1]}`,desc});
+  }
+  if(frames.length)return frames;
+
+  const blocks=text.split(/\n{2,}/);
+  blocks.forEach((blk,i)=>{
+    const t=blk.trim();
+    if(t.length>20)frames.push({time:`#${i+1}`,name:`段落${i+1}`,desc:t});
+  });
+  return frames;
+}
+
+
+/* ========== VIDEO ANALYSIS ========== */
+
+
+let _videoCtx=null;
+
+function triggerVideoUpload(){
+  $('#videoFileInput').value='';
+  $('#videoFileInput').click();
+}
+
+function handleVideoFile(input){
+  const file=input.files[0];
+  if(!file)return;
+  if(!file.type.startsWith('video/')){toast('请选择视频文件');return}
+  const maxMB=100;
+  if(file.size>maxMB*1024*1024){toast(`文件过大（最大 ${maxMB}MB）`);return}
+  archiveAndClear();
+  _videoCtx={file,name:file.name,size:file.size,analysis:''};
+  showVideoPreview(file);
+}
+
+function showVideoPreview(file){
+  const objUrl=URL.createObjectURL(file);
+  const msgEl=addMsg('ai','');
+  const bubble=msgEl.querySelector('.msg-b');
+
+  const c=getCfg();
+  const hasQwen=!!c.qwenKey;
+  const methodTag=hasQwen
+    ?'<span style="display:inline-flex;align-items:center;gap:4px;font-size:10px;padding:2px 8px;border-radius:980px;background:rgba(255,149,0,.15);color:#ff9500;font-weight:600">&#9679; 阿里云千问 '+(c.qwenVideoModel||'qwen3.5-plus')+'</span>'
+    :'<span style="display:inline-flex;align-items:center;gap:4px;font-size:10px;padding:2px 8px;border-radius:980px;background:rgba(255,69,58,.15);color:#ff453a;font-weight:600">&#9679; 未配置</span>';
+  const methodNote=hasQwen
+    ?'<span style="font-size:10px;color:var(--t3)">自动抽帧分析，支持任意大小视频</span>'
+    :'<span style="font-size:10px;color:var(--t3)"><a href="javascript:openCfg()" style="color:var(--p)">请先配置阿里云千问 API Key →</a></span>';
+
+  bubble.innerHTML=`
+    <div class="vid-preview">
+      <video src="${objUrl}" controls muted preload="metadata"></video>
+      <div class="vid-preview-info">
+        <div class="vid-preview-name">${esc(file.name)}</div>
+        <div class="vid-preview-meta" id="vidMeta">${(file.size/1024/1024).toFixed(1)} MB</div>
+        <div style="margin-top:6px;display:flex;gap:6px;align-items:center;flex-wrap:wrap">
+          ${methodTag}${methodNote}
+        </div>
+        
+        <div class="vid-analyze-bar" style="margin-top:8px">
+          <button class="btn btn-p btn-s" id="vidStartBtn" onclick="startVideoAnalysis()" style="white-space:nowrap">&#9654; 开始分析</button>
+          <div class="vid-progress" style="flex:1"><div class="vid-progress-fill" id="vidProgressFill"></div></div>
+          <span id="vidProgressText" style="font-size:10px;color:var(--t3);min-width:50px;text-align:right"></span>
+        </div>
+      </div>
+    </div>`;
+
+  const video=bubble.querySelector('video');
+  video.addEventListener('loadedmetadata',()=>{
+    const dur=video.duration;
+    _videoCtx.duration=dur;
+    const meta=$('#vidMeta');
+    if(meta)meta.textContent=`${(file.size/1024/1024).toFixed(1)} MB · ${dur.toFixed(1)}s · ${video.videoWidth}×${video.videoHeight}`;
+  });
+}
+
+function buildVideoPrompt(durStr,fileName){
+  const ratio=$('#ratioSel').value;
+  const g=curGame();
+  return `请分析这段买量视频（${durStr}，${fileName}）。
+
+当前游戏：${g.name}（${g.genre||'未知类型'}）
+视频比例：${ratio}
+
+请输出以下完整分析：
+
+## 1. 视频概述
+- 视频风格（2D/3D/实拍/UE渲染/混剪等）
+- 整体色调、光影氛围
+- 画面比例与构图特征
+- 目标受众推测
+
+## 2. 逐秒结构拆解
+按时间线逐段拆解（尽量精确到秒），每段包含：
+- **时间区间**（如 00:00–00:03）
+- **段落名称**
+- **画面描述**：具体的视觉元素、角色外观、场景环境、动作细节
+- **镜头语言**：推拉摇移、特写、俯拍、跟拍、转场方式
+- **音效/节奏感**：快节奏/慢节奏、卡点、音效变化
+- **叙事功能**：钩子/铺垫/高潮/转折/CTA
+
+## 3. 买量策略分析
+- 叙事结构类型（双主线/故意失败/无限轮回/连锁爆炸/数字增长/反转逆袭等）
+- 3秒钩子的具体设计手法
+- 吸量主题方向
+- 引流玩法（A线）vs 真实玩法（B线）的时间占比
+- 值得复用的创意亮点和视觉技巧
+
+## 4. 可复用元素清单
+列出可以直接在新脚本中复用的：
+- 开场钩子模板
+- 转场手法
+- 节奏模式
+- 特效/视觉技巧
+
+## 5. 优化建议
+- 节奏/构图/钩子的改进空间
+- 迭代延展的3个方向`;
+}
+
+async function startVideoAnalysis(){
+  if(!_videoCtx||!_videoCtx.file)return;
+  const c=getCfg();
+  if(!c.qwenKey){addMsg('ai','请先配置阿里云千问 DashScope API Key。');openCfg();return}
+
+  const btn=$('#vidStartBtn');
+  const progFill=$('#vidProgressFill');
+  const progText=$('#vidProgressText');
+  if(btn)btn.disabled=true;
+  progFill.style.background='var(--p)';
+
+  const file=_videoCtx.file;
+  const dur=_videoCtx.duration?_videoCtx.duration.toFixed(1)+'s':'未知';
+  const promptText=buildVideoPrompt(dur,file.name);
+
+  let result='';
+  const methodLabel='阿里云千问';
+
+  try{
+    result=await analyzeViaQwenAPI(c,file,promptText,dur,progFill,progText);
+  }catch(err){
+    progFill.style.width='100%';
+    progFill.style.background='var(--r)';
+    progText.textContent='失败';
+    addMsg('ai',`❌ 视频分析失败（${methodLabel}）\n\n错误: ${err.message}\n\n请检查：\n1. API Key 是否有效\n2. 账户余额是否充足\n3. 视频文件是否过大\n4. 尝试切换分析模型或 API 通道`);
+    scrollBtm();
+    if(btn)btn.disabled=false;
+    return;
+  }
+
+  progFill.style.width='100%';
+  progText.textContent='完成 ✓';
+  progFill.style.background='var(--g)';
+
+  _videoCtx.analysis=result;
+  chatHist.push({role:'assistant',content:result});
+
+  const aiEl=addMsg('ai',result);
+  addVideoActions(aiEl,result);
+  scrollBtm();
+  if(btn)btn.disabled=false;
+}
+/* ---- 阿里云千问 DashScope 视频分析（抽帧方案） ---- */
+function extractVideoFrames(file,fps,progFill,progText){
+  return new Promise((resolve,reject)=>{
+    const video=document.createElement('video');
+    video.muted=true;
+    video.preload='auto';
+    const url=URL.createObjectURL(file);
+    video.src=url;
+
+    video.onerror=()=>{URL.revokeObjectURL(url);reject(new Error('视频加载失败'));};
+
+    video.onloadedmetadata=()=>{
+      const duration=video.duration;
+      if(!duration||!isFinite(duration)){URL.revokeObjectURL(url);reject(new Error('无法读取视频时长'));return}
+
+      const canvas=document.createElement('canvas');
+      const ctx=canvas.getContext('2d');
+      const interval=1/fps;
+      const times=[];
+      for(let t=0;t<duration;t+=interval)times.push(t);
+      if(times.length>120)times.length=120;
+
+      const frames=[];
+      let idx=0;
+
+      function grabNext(){
+        if(idx>=times.length){
+          URL.revokeObjectURL(url);
+          resolve({frames,fps,duration});
+          return;
+        }
+        video.currentTime=times[idx];
+      }
+
+      video.onseeked=()=>{
+        canvas.width=Math.min(video.videoWidth,960);
+        canvas.height=Math.round(canvas.width*(video.videoHeight/video.videoWidth));
+        ctx.drawImage(video,0,0,canvas.width,canvas.height);
+        const dataUrl=canvas.toDataURL('image/jpeg',0.75);
+        frames.push(dataUrl);
+        idx++;
+        const pct=10+Math.round((idx/times.length)*35);
+        progFill.style.width=pct+'%';
+        progText.textContent=`抽帧 ${idx}/${times.length}`;
+        setTimeout(grabNext,0);
+      };
+
+      grabNext();
+    };
+  });
+}
+
+async function analyzeViaQwenAPI(c,file,promptText,dur,progFill,progText){
+  if(!c.qwenKey)throw new Error('未配置阿里云千问 API Key');
+  const qModel=c.qwenVideoModel||'qwen3.5-plus';
+  const apiKey=c.qwenKey;
+  const FPS=2;
+
+  progText.textContent='加载视频…';
+  progFill.style.width='5%';
+
+  const {frames,fps:actualFps,duration}=await extractVideoFrames(file,FPS,progFill,progText);
+  if(!frames.length)throw new Error('未能提取任何视频帧');
+
+  progText.textContent=`已提取 ${frames.length} 帧，发送分析…`;
+  progFill.style.width='50%';
+
+  const messages=[
+    {role:'system',content:'你是专业的手游买量视频分析师。对用户上传的买量视频进行深度结构化分析。'},
+    {role:'user',content:[
+      {type:'video',video:frames,fps:FPS},
+      {type:'text',text:`[视频信息] 时长: ${duration.toFixed(1)}s, 抽帧率: ${FPS}fps, 共 ${frames.length} 帧\n\n${promptText}`}
+    ]}
+  ];
+
+  progFill.style.width='60%';
+
+  const resp=await fetch('https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions',{
+    method:'POST',
+    headers:{
+      'Content-Type':'application/json',
+      'Authorization':`Bearer ${apiKey}`
+    },
+    body:JSON.stringify({model:qModel,messages,temperature:0.7,max_tokens:8192})
+  });
+
+  if(!resp.ok){
+    const errText=await resp.text();
+    throw new Error(`DashScope ${resp.status}: ${errText.slice(0,300)}`);
+  }
+
+  progFill.style.width='85%';
+  progText.textContent='解析回复…';
+
+  const json=await resp.json();
+  const result=json.choices?.[0]?.message?.content||'';
+  if(!result)throw new Error('API 返回内容为空');
+  return result;
+}
+
+function addVideoActions(aiEl,result){
+  const acts=aiEl.querySelector('.msg-acts');if(!acts)return;
+  acts.style.cssText='display:flex;gap:6px;margin-top:8px;flex-wrap:wrap;align-items:center';
+
+  [['📋 复制分析',()=>navigator.clipboard.writeText(result).then(()=>toast('已复制'))],
+   ['💾 导出分析',()=>{const b=new Blob([result],{type:'text/plain;charset=utf-8'});const l=document.createElement('a');l.href=URL.createObjectURL(b);l.download=`视频分析_${Date.now()}.txt`;l.click();toast('已导出')}]
+  ].forEach(([label,fn])=>{const b=document.createElement('button');b.className='btn btn-g btn-s';b.textContent=label;b.onclick=fn;acts.appendChild(b)});
+
+  const sep=document.createElement('div');sep.style.cssText='width:100%;height:0';acts.appendChild(sep);
+
+  [['⚡ 基于此视频生成迭代脚本',
+    '基于上面的视频分析结果，保留其有效的买量策略和结构，结合当前选择的主题和游戏，生成一个全新的迭代优化版分镜脚本。保持原视频的节奏优点，改进分析中提到的不足之处。',
+    'var(--p)','#fff'],
+   ['🔄 换风格重做',
+    '基于上面的视频分析，保留其核心的吸量策略，但完全更换视觉风格和叙事结构，生成一个差异化的全新分镜脚本。',
+    'var(--pl)','#fff'],
+   ['📊 对比出3个迭代方案',
+    '基于上面的视频分析，输出3个不同方向的迭代方案简案（每个方案100字以内），说明各自的改动重点和预期效果差异，供我选择。',
+    'var(--y)','#1a1a2e']
+  ].forEach(([label,prompt,bg,color])=>{
+    const b=document.createElement('button');
+    b.textContent=label;b.onclick=()=>qk(prompt);
+    b.style.cssText=`padding:8px 16px;border-radius:8px;font-size:12px;font-weight:600;border:none;cursor:pointer;background:${bg};color:${color};transition:opacity .15s`;
+    b.onmouseenter=()=>b.style.opacity='0.85';
+    b.onmouseleave=()=>b.style.opacity='1';
+    acts.appendChild(b);
+  });
+}
+
+/* ========== THEME ========== */
+function applyTheme(t){
+  document.documentElement.setAttribute('data-theme',t);
+  const btn=$('#themeToggle');
+  if(btn) btn.innerHTML = t==='light' ? '&#9728;&#65039;' : '&#127769;';
+  save('sg_theme',t);
+}
+function toggleTheme(){
+  const cur=document.documentElement.getAttribute('data-theme')||'dark';
+  applyTheme(cur==='dark'?'light':'dark');
+}
+applyTheme(load('sg_theme')||'dark');
+
+/* ========== INIT ========== */
+renderGameSel();
+renderPresets();
+renderThemes();
+renderSellBar();
+updStatus();
+updHistCount();
+
+['c_or_search_model','c_or_gen_model','c_or_key'].forEach(id=>{
+  const el=$('#'+id);
+  if(el)el.addEventListener('change',()=>{saveCfgSilent();updStatus()});
+  if(el&&el.tagName==='INPUT')el.addEventListener('blur',()=>{saveCfgSilent();updStatus()});
+});
+function saveCfgSilent(){
+  save('sg_cfg',{
+    orKey:$('#c_or_key').value,
+    orSearchModel:$('#c_or_search_model').value,
+    orGenModel:$('#c_or_gen_model').value,
+    qwenKey:$('#c_qwen_key')?.value||'',
+    qwenVideoModel:$('#c_qwen_video_model')?.value||'qwen3.5-plus',
+    searchProv:$('#c_search_prov').value, searchKey:$('#c_search_key').value,
+    searchEp:$('#c_search_ep').value, searchModel:$('#c_search_model').value,
+    genProv:$('#c_gen_prov').value, genKey:$('#c_gen_key').value,
+    genEp:$('#c_gen_ep').value, genModel:$('#c_gen_model').value
+  });
+}
+</script>
+</body>
+</html>
